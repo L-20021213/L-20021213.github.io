@@ -1,0 +1,216 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>博客恋爱记时 | Sianx's Blog</title><meta name="keywords" content="代码"><meta name="author" content="丨浅笑安然丨"><meta name="copyright" content="丨浅笑安然丨"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="之前在别的网站看到过，一直没搞，刚刚想起来了，就弄了一下，感谢[陵南][1]提供的代码。  效果展示 教程将下面代码粘贴到主题-开发者设置-自定义 JavaScript 1234567891011121314151617181920212223242526272829&lt;!--恋爱记时--&gt;function lovexhjSitetime() &amp;#123;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="博客恋爱记时">
+<meta property="og:url" content="http://example.com/posts/2b564b0b/index.html">
+<meta property="og:site_name" content="Sianx&#39;s Blog">
+<meta property="og:description" content="之前在别的网站看到过，一直没搞，刚刚想起来了，就弄了一下，感谢[陵南][1]提供的代码。  效果展示 教程将下面代码粘贴到主题-开发者设置-自定义 JavaScript 1234567891011121314151617181920212223242526272829&lt;!--恋爱记时--&gt;function lovexhjSitetime() &amp;#123;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/L-20021213/picture@1.0.0/2021/02/05/e29ed2e10f4ccbaddfef7dc9588dde89.png">
+<meta property="article:published_time" content="2020-09-18T20:45:08.000Z">
+<meta property="article:modified_time" content="2021-07-08T07:54:46.737Z">
+<meta property="article:author" content="丨浅笑安然丨">
+<meta property="article:tag" content="代码">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/L-20021213/picture@1.0.0/2021/02/05/e29ed2e10f4ccbaddfef7dc9588dde89.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/posts/2b564b0b/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?f1728a278bae0948479300e302629dff";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '博客恋爱记时',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-07-08 07:54:46'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if (GLOBAL_CONFIG_SITE.isHome && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/L-20021213/Static/csscustom.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/L-20021213/Static/tags.min.css"><meta name="generator" content="Hexo 5.4.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://cdn.jsdelivr.net/gh/L-20021213/picture@1.0.0/Blog/logo.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">56</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">39</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/%E7%9B%B8%E5%86%8C%20/Gallery/"><i class="fa-fw fas fa-images 标签 /tags/"></i><span> 清单||fa fa-heartbeat</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/message/"><i class="fa-fw fas fa-edit"></i><span> 留言</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/gh/L-20021213/picture@1.0.0/2021/02/05/e29ed2e10f4ccbaddfef7dc9588dde89.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Sianx's Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/%E7%9B%B8%E5%86%8C%20/Gallery/"><i class="fa-fw fas fa-images 标签 /tags/"></i><span> 清单||fa fa-heartbeat</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/message/"><i class="fa-fw fas fa-edit"></i><span> 留言</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">博客恋爱记时</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-09-18T20:45:08.000Z" title="发表于 2020-09-18 20:45:08">2020-09-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-07-08T07:54:46.737Z" title="更新于 2021-07-08 07:54:46">2021-07-08</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/">学习记录</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="博客恋爱记时"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><div class="note warning simple"><p>之前在别的网站看到过，一直没搞，刚刚想起来了，就弄了一下，感谢[陵南][1]提供的代码。</p>
+</div>
+<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p><img src="https://cdn.jsdelivr.net/gh/L-20021213/picture@1.0.0/2020/09/18/b278b88675eeaf8f01e3392ebc2606a7.png"></p>
+<h2 id="教程"><a href="#教程" class="headerlink" title="教程"></a>教程</h2><p>将下面代码粘贴到<code>主题-开发者设置-自定义 JavaScript</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--恋爱记时--&gt;</span><br><span class="line">function lovexhjSitetime() &#123;</span><br><span class="line">                window.setTimeout(&quot;lovexhjSitetime()&quot;, 1000);</span><br><span class="line">                var seconds = 1000</span><br><span class="line">                var minutes = seconds * 60</span><br><span class="line">                var hours = minutes * 60</span><br><span class="line">                var days = hours * 24</span><br><span class="line">                var years = days * 365</span><br><span class="line">                var today = new Date()</span><br><span class="line">                var todayYear = today.getFullYear()</span><br><span class="line">                var todayMonth = today.getMonth()+1</span><br><span class="line">                var todayDate = today.getDate()</span><br><span class="line">                var todayHour = today.getHours()</span><br><span class="line">                var todayMinute = today.getMinutes()</span><br><span class="line">                var todaySecond = today.getSeconds()</span><br><span class="line">                // 时间设置</span><br><span class="line">                var t1 = Date.UTC(2020, 04, 15, 15, 15, 00)</span><br><span class="line">                var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond)</span><br><span class="line">                var diff = t2 - t1</span><br><span class="line">                var diffYears = Math.floor(diff / years)</span><br><span class="line">                var diffDays = Math.floor((diff / days) - diffYears * 365)</span><br><span class="line">                var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours)</span><br><span class="line">                var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) / minutes)</span><br><span class="line">                var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -</span><br><span class="line">                    diffMinutes * minutes) / seconds)</span><br><span class="line">                document.getElementById(&quot;lovexhjSitetime&quot;).innerHTML = &quot;我们相恋了&quot; + diffYears + &quot;年&quot; + diffDays + &quot;天&quot; +</span><br><span class="line">                    diffHours + &quot;小时&quot; + diffMinutes + &quot;分钟&quot; + diffSeconds + &quot;秒啦&quot;</span><br><span class="line">            &#125;</span><br><span class="line">            lovexhjSitetime()</span><br></pre></td></tr></table></figure>
+
+<p>以下代码粘贴到<code>全局右侧广告位</code>即可</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;aside class=&quot;widget_text sidebar-widget widget_custom_html fadeInUp&quot;&gt;</span><br><span class="line">&lt;div class=&quot;textwidget custom-html-widget&quot;&gt;</span><br><span class="line">&lt;div id=&quot;lovexhj&quot; style=&quot;width: 100%; height: 100px; text-align: center; font-size: 1rem;&quot;&gt;         </span><br><span class="line">&lt;div id=&quot;lovexhjImage&quot; style=&quot;width: 220px; margin: 0 auto;&quot;&gt;</span><br><span class="line">&lt;!-- 左边的头像 --&gt;</span><br><span class="line">&lt;img src=&quot;https://cdn.jsdelivr.net/gh/L-20021213/picture@1.0.0/2020/09/18/ce811c68ff1b4eb9a5b6d2a784d07c31.png&quot; alt=&quot;love&quot; style=&quot;width: 60px; border-radius: 50%;&quot;&gt;</span><br><span class="line">&lt;!-- 中间的图片 --&gt;</span><br><span class="line">&lt;img src=&quot;https://cdn.jsdelivr.net/gh/L-20021213/picture@1.0.0/2020/09/18/lovelogo%20.gif&quot; alt=&quot;love&quot; style=&quot;width: 60px; border-radius: 50%;&quot;&gt;</span><br><span class="line">&lt;!-- 右边的头像 --&gt;</span><br><span class="line">&lt;img src=&quot;https://cdn.jsdelivr.net/gh/L-20021213/picture@1.0.0/2020/09/18/3db15cc33adda3afcdbc62e18fc8403f.png&quot; alt=&quot;love&quot; style=&quot;width: 60px; border-radius: 50%;&quot;&gt;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line">&lt;p id=&quot;lovexhjSitetime&quot; style=&quot;font-size: 0.8rem;    margin-top: 16px;  background: linear-gradient(to right, red, blue);-webkit-background-clip: text;color: transparent;&quot;&gt;我们相恋了104天14小时47分钟19秒啦&lt;/p&gt;  &lt;/div&gt;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line">&lt;/aside&gt;</span><br></pre></td></tr></table></figure>
+<div class="note success simple"><p>侧边广告栏名字在<code>usr/themes/handsome/component/sidebar.php</code>文件中修改。</p>
+</div>
+
+<hr>
+<div class="note primary simple"><p>最后，代码有了，对象在哪领，麻烦知情人士认识告诉我一下。</p>
+</div>
+
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">丨浅笑安然丨</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/posts/2b564b0b/">http://example.com/posts/2b564b0b/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">Sianx's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E4%BB%A3%E7%A0%81/">代码</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/L-20021213/picture@1.0.0/2021/02/05/e29ed2e10f4ccbaddfef7dc9588dde89.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/54683/"><img class="prev-cover" src="https://cdn.jsdelivr.net/gh/L-20021213/picture@1.0.0/2021/02/05/2a6e5be6cbb290f72a3529cc65a57cc9.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">hexo备忘录</div></div></a></div><div class="next-post pull-right"><a href="/posts/cf96829b/"><img class="next-cover" src="https://cdn.jsdelivr.net/gh/L-20021213/picture@1.0.0/2021/02/05/5fb8a0bc89bac59f4ecc59c02d727229.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">在线查病毒分析的网站</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://cdn.jsdelivr.net/gh/L-20021213/picture@1.0.0/Blog/logo.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">丨浅笑安然丨</div><div class="author-info__description">一名毫无前途可言的有志青年。</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">56</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">39</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/L-20021213"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="mailto:sianx@aliyun.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="https://music.163.com/#/user/home?id=596363983" target="_blank" title="music"><i class="fas fas fa-music"></i></a><a class="social-icon" href="https://space.bilibili.com/91773304" target="_blank" title="bilibili"><i class="fab fa-youtube"></i></a><a class="social-icon" href="https://travellings.now.sh/" target="_blank" title="开往"><i class="fas fa-paper-plane"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">欢迎来到丨浅笑安然丨的小站！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%88%E6%9E%9C%E5%B1%95%E7%A4%BA"><span class="toc-number">1.</span> <span class="toc-text">效果展示</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%99%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">教程</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/d6c53fcb/" title="AS800环法联名款售后换新开箱"><img src="https://cdn.jsdelivr.net/gh/L-20021213/picture@1.0.0/2021/03/02/69511afd80df6cf1f1e44ad1d247ec7e.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="AS800环法联名款售后换新开箱"/></a><div class="content"><a class="title" href="/posts/d6c53fcb/" title="AS800环法联名款售后换新开箱">AS800环法联名款售后换新开箱</a><time datetime="2021-05-16T10:10:08.000Z" title="发表于 2021-05-16 10:10:08">2021-05-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/b272844b/" title="GitHub Actions自动部署Hexo博客"><img src="https://cdn.jsdelivr.net/gh/L-20021213/picture@master/2021/05/11/b05e773eb655d852b751c7db73be7e4c.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="GitHub Actions自动部署Hexo博客"/></a><div class="content"><a class="title" href="/posts/b272844b/" title="GitHub Actions自动部署Hexo博客">GitHub Actions自动部署Hexo博客</a><time datetime="2021-05-11T11:14:08.000Z" title="发表于 2021-05-11 11:14:08">2021-05-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/1257f843/" title="在Windows系统上给ssh设置代理"><img src="https://cdn.jsdelivr.net/gh/L-20021213/picture@master/2021/04/27/e88114f2ee2c0705f7c9ec95e42fe7ae.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="在Windows系统上给ssh设置代理"/></a><div class="content"><a class="title" href="/posts/1257f843/" title="在Windows系统上给ssh设置代理">在Windows系统上给ssh设置代理</a><time datetime="2021-05-11T10:10:08.000Z" title="发表于 2021-05-11 10:10:08">2021-05-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/272fcb49/" title="喜提新车"><img src="https://cdn.jsdelivr.net/gh/L-20021213/picture@master/2021/05/02/56a00736fffc6f564c1dffbb471c9fda.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="喜提新车"/></a><div class="content"><a class="title" href="/posts/272fcb49/" title="喜提新车">喜提新车</a><time datetime="2021-05-01T13:23:08.000Z" title="发表于 2021-05-01 13:23:08">2021-05-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/948358f6/" title="BT下载小妙招"><img src="https://cdn.jsdelivr.net/gh/LeoMu0815/HexoStaticFile1@68e75dcd2cdc0893da69605249907fea50a5292e/2020/08/12/b20963c6fe63e537f9e39aa93a2696c0.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="BT下载小妙招"/></a><div class="content"><a class="title" href="/posts/948358f6/" title="BT下载小妙招">BT下载小妙招</a><time datetime="2021-04-06T10:23:08.000Z" title="发表于 2021-04-06 10:23:08">2021-04-06</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2021 By 丨浅笑安然丨</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn/" target="_blank">苏ICP备2020069297号-1</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>(()=>{
+  const $countDom = document.getElementById('twikoo-count')
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'twikoo-5gcohu0q16556e91',
+      region: ''
+    }, null))
+  }
+
+  const getCount = () => {
+    twikoo.getCommentsCount({
+      envId: 'twikoo-5gcohu0q16556e91',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      $countDom.innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const loadTwikoo = (bool = false) => {
+    if (typeof twikoo === 'object') {
+      init()
+      bool && $countDom && setTimeout(getCount,0)
+    } else {
+      getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(()=> {
+        init()
+        bool && $countDom && setTimeout(getCount,0)
+      })
+    }
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo(true)
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script></div><script src="https://cdn.jsdelivr.net/gh/L-20021213/Static/jscustom.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
