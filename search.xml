@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>如何使用docker搭建腾讯云DDNS-GO</title>
+      <link href="/posts/1443fa7/"/>
+      <url>/posts/1443fa7/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>因为家里没有ipv4的公网ip，而使用ipv6可以实现内网穿透，这时就要用到DDNS-GO这款工具了，早在半年前我就有使用过DDNS-GO，但是半年后的今天我再次安装DDNS-GO竟然设置不起来了，于是就写了这篇文章记录。</p></blockquote><h2 id="docker安装ddns-go"><a href="#docker安装ddns-go" class="headerlink" title="docker安装ddns-go"></a>docker安装ddns-go</h2><p>拉取镜像:</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull jeessy/ddns-go</span><br></pre></td></tr></table></figure><p>启动ddns-go:</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name ddns-go --restart=always --net=host -v /opt/ddns-go:/root jeessy/ddns-go</span><br></pre></td></tr></table></figure><p>启动后切记，<strong>放行9876端口。</strong></p><p>访问服务: <code>http://服务器ip:9876</code>就可以访问了。</p><h2 id="配置ddns-go"><a href="#配置ddns-go" class="headerlink" title="配置ddns-go"></a>配置ddns-go</h2><ol><li>选择腾讯云，点击创建密钥。</li><li>在腾讯云里按照提示创建密钥得到ID和token。</li><li>填入到DDNS-GO配置面板里</li><li>配置ipv4或者ipv6根据自身需求，我是使用ipv4配置域名的。</li><li>在IPv4下面的Domains中填入自己的域名，比如<code>pi.siax.cn</code>，这里注意不需要<code>https:// </code>和<code> /</code>。</li><li>回到腾讯云添加解析，主机记录填<code>@</code>,记录类型<code>A</code>,记录值<code>1.1.1.1</code>，然后DDNS-GO会自动解析。</li><li>如果需要使用IPv6，操作方法和上面一致。不过要注意，域名不能和IPv4的一样，可以改成<code>v6.pi.siax.cn。</code></li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> 📚学习记录 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 📔笔记 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>写给女朋友的第一封信</title>
       <link href="/posts/db6cbffb/"/>
       <url>/posts/db6cbffb/</url>
