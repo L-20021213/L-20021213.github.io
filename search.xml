@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>从零开始的Python学习之旅：准备篇</title>
+      <link href="/posts/d6e3b4b2/"/>
+      <url>/posts/d6e3b4b2/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>这篇文章作为我Python学习之旅的第一篇文章，文章的前半段我先简单的概括一下目前的情况。</p><p>很久之前朋友就跟我说过Python非常简单，很快就能入门。但是我基础较差，看个单词都费劲别说学习一门语言了。最近，在群里看到有人用树莓派搞项目，这让我我突然想起来我还有个树莓派4B。但是用树莓派做项目就离不开编程，它支持的语言里好像也就python最简单了。近几年我也折腾过一些python的项目还是挺感兴趣的。再加上最近上班的时候常常发呆思考人生，于是我下定决心了：我要学习Python！</p></blockquote><h2 id="决定"><a href="#决定" class="headerlink" title="决定"></a>决定</h2><h3 id="头脑一热"><a href="#头脑一热" class="headerlink" title="头脑一热"></a>头脑一热</h3><p>上班的时候突然决定要学习Python。回到家后，我在B站搜索了相关的教程。可是那些教程都过于专业，零基础的我还是有点理解不了。我决定尝试付费课程，最终找到了《小白玩转Python数据分析训练营（含AI专题）》这门课程。简单试看了10集，讲的非常的详细，从Python和PyCharm的安装开始，一直讲解到各种函数的用法以及案例演示。可以说是一步一步地手把手教学了。于是花了249块钱人民币购买力这门课程，共有73节课程，还有专门的学习群。也许有些人无法理解为什么我要花钱学习一些别人似乎可以轻松掌握的内容，但由于我的基础太薄弱，即使我花钱也无法完全掌握课程中所讲的知识。因此，我决定先按照课程的步骤学习，每一步都记录笔记并进行实际操作，以加深我的理解。现在AI这么发达我不需要完全学会怎么去写代码，但我需要明白我所写的代码是什么，它能做什么。</p><h3 id="恍然大悟"><a href="#恍然大悟" class="headerlink" title="恍然大悟"></a>恍然大悟</h3><p>坦白说，尽管我花了钱报了一门课程，但它确实非常通俗易懂，一步一步地解释每个函数。然而，随着函数的增多，我仍然感觉有点懵，因为我的英语水平相当差劲。相对于其他人只需记住函数的含义，我就像重新上英语课一样，需要逐个学习函数的拼写和用法。这导致我在学习的时候思维有些混乱。</p><p>但是突然的一个想法让我醍醐灌顶，豁然开朗。我在大学学习了工业机器人的编程，基本思想是通过一些基础的函数来让机器人执行各种动作，最后通过主程序将所有这些动作串联起来。整个逻辑与Python的编程非常相似，只是Python的函数更多一些。</p><p>但是想通了之后，我就没有那么大的压力了。毕竟，学习Python就像拼积木一样。首先要做的就是熟悉各种函数，了解Python的应用领域，以及代码的逻辑。毕竟，太复杂的任务或者我不懂的部分可以交给AI来处理。至于我记不住的东西，我会把它们记录下来，以后可以随时查看。这就像写作文一样，只要能够写出满意的文章，查几次字典不算什么。</p><h2 id="安装Python和PyCharm"><a href="#安装Python和PyCharm" class="headerlink" title="安装Python和PyCharm"></a>安装Python和PyCharm</h2><p>开始学习之前要先安装Python解释器和代码编辑器。</p><p>这里推荐PyCharm而不是VScode的原因是这款软件对小白真的很友好，代码补全、一键下载缺少的库等真的很好用。</p><ul><li>Python解释器：<a href="https://www.python.org/downloads/">Download Python | Python.org</a></li><li>代码编辑器：<a href="https://www.jetbrains.com/pycharm/download/?section=windows">下载 PyCharm</a>这里注意，要下载的是社区版，不要下错了。</li></ul><h3 id="Python安装"><a href="#Python安装" class="headerlink" title="Python安装"></a>Python安装</h3><p>一定要勾选上下面的PATH，把python添加到环境变量让电脑知道python安装在哪。</p><p><img src="https://cdn.siax.cn/gh/L-20021213/picture@master/img/20230916000528.png"></p><p>安装完成后进入命令提示符(cmd)输入<code>python</code>然后回车。</p><p>返回类似下面的内容就是安装成功了。</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\Li&gt;python</span><br><span class="line">Python 3.11.5 (tags/v3.11.5:cce6ba9, Aug 24 2023, 14:38:34) [MSC v.1936 64 bit (AMD64)] on win32</span><br><span class="line">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure><h2 id="PyCharm安装"><a href="#PyCharm安装" class="headerlink" title="PyCharm安装"></a>PyCharm安装</h2><p>刚开始建议勾选下面两个，一个是<code>创建快捷方式</code>，一个是默认用<code>PyCharm</code>打开<code>.py</code>文件。</p><p><img src="https://cdn.siax.cn/gh/L-20021213/picture@master/img/0230916001235.png"></p><p>安装完成后软件是纯英文的，点击侧边栏<code>Plugins</code>然后搜索<code>Chinese</code>就可以看到一个logo是汉字的<code>中文语言包</code>，安装之后重启一下就可以了。</p><p><img src="https://cdn.siax.cn/gh/L-20021213/picture@master/img/230916001631.png"></p><p>然后可以<code>新建一个项目</code>，这里的<code>位置</code>建议自己自定义一个文件夹，防止后面找路径麻烦。然后选择<code>自己的解释器版本</code>(一般会自动选择)，取消底部创建<code>main.py</code>的勾之后点击<code>创建</code>，就可以正式开始学习python啦！！！</p><p><img src="https://cdn.siax.cn/gh/L-20021213/picture@master/img/20230916001739.png"></p><h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><blockquote><p>因为这是Python学习的第一个笔记，软件的安装非常重要。如果安装过程中操作失误后面可能要多走很多的弯路，所以我写的比较细。后面应该会写一篇《从零开始的Python学习之旅：笔记篇》，主要记录自己学习过程中学到的函数和自己跟着课程写的案例。</p></blockquote>]]></content>
+      
+      
+      <categories>
+          
+          <category> 📚学习记录 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 📔笔记 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Python基础笔记【来自网络】</title>
       <link href="/posts/3d8035a5/"/>
       <url>/posts/3d8035a5/</url>
