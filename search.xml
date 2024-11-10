@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>佳明手表等高线地图折腾实录</title>
+      <link href="/posts/f6f607dc/"/>
+      <url>/posts/f6f607dc/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>因为喜欢户外运动，去年购入了佳明955手表。在户外徒步时，很多野路并不会在手表地图上显现出来，手表仅仅能展示路书的路线以及大致方向。倘若路线难度较大，这种情况还是比较危险的。鉴于此，我便想到了等高线地图。由于我国法律的规定，佳明手表本身是不配备等高线地图的。然而，这种数据其实早已公开，官方不提供的情况下，就只能自行进行安装。这里我提供两种思路，自己折腾和花钱解决，我是比较推荐花钱解决的，省时省力还好用。<span class='p red center logo large'>特此声明，本文章仅提供相关思路以供学习参考，绝不提供任何地图文件。</span></p></blockquote><h2 id="免费"><a href="#免费" class="headerlink" title="免费"></a>免费</h2><p><a href="https://garmin.opentopomap.org/#asia">https://garmin.opentopomap.org/#asia</a><br><a href="https://alternativaslibres.org/en/downloads.php#Asia">https://alternativaslibres.org/en/downloads.php#Asia</a></p><h3 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h3><ul><li>下载中国地形图到电脑，然后会有个<code>OpenStreetMap_China_int_Topo</code>的压缩包，解压后会有个同名的<code>.exe（应用程序）</code>文件。双击打开后选择一个路径然后安装提示点击<code>下一步</code>即可。这里要注意的是路径默认是在c盘，建议选择其他的路径，因为路径下是地图文件，方便后期寻找或删除。</li><li>然后需要下载一个佳明官方的<a href="https://www.garmin.com/zh-CN/software/basecamp/">BaseCamp</a>软件。安装完成后点击电脑左下角<code>开始</code>按钮，可以看到BaseCamp的快捷方式，但是我们暂时用不上。双击打开一起安装的<code>MapInstall</code>（在BaseCamp快捷方式下面）</li><li>将手表和电脑连接，点击查找设备等待<code>MapInstall</code>识别到设备，然后下方会显示出当前电脑里刚刚下载的地图文件，没有的也可以自定义路径，选择地图文件夹然后点击继续直至安装完成即可。</li><li>到这里地图就已经成功的安装到手表了，在佳明的根目录下的<code>Garmin</code>文件夹中会多出两个<code>.img</code>文件，这就是地图文件。</li></ul><h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><ul><li>网络上有些地图文件下载下来解压缩后直接就是<code>.img</code>文件，这种直接将手表连接电脑。打开手表根目录下的<code>Garmin</code>文件夹然后将后缀<code>.img</code>的地图文件拷贝进去即可。</li></ul><h3 id="使用地图"><a href="#使用地图" class="headerlink" title="使用地图"></a>使用地图</h3><ul><li><p>首先选择需要使用等高线的运动模式，然后长按左中键进入，点击<code>某某设置-向下滑找到地图-设置地图</code>，将原来自带的地图都关闭，只保留刚刚安装的等高线地图。</p></li><li><p>这里给大家科普一下原因，我国使用的是<code>GCJ-02</code>坐标系，与国际通用的<code>WGS-84</code>坐标系不同。这是出于国家安全等多方面考虑进行的设置。正因为坐标系不同，所以在使用一些设备上的地图时，其显示的位置相对实际位置会出现几百米的偏移。</p></li><li><p>上面提到过因为坐标系不同地图会有一定偏移，那么导入进去的路书也会有偏移，解决方法也简单。在<code>制作</code>或者<code>导入</code>路书的时候有个<code>更多</code>选项，里面有个<code>地图匹配</code>选项，点击之后可以看到轨迹偏离了地图，这个时候不用管直接保存同步，传到手表里就可以看到轨迹和地图对上了。</p></li></ul><h2 id="付费"><a href="#付费" class="headerlink" title="付费"></a>付费</h2><p>付费就没有那么麻烦了，在我折腾了三个小时免费等高线地图之后觉得每次都要纠偏太麻烦后就去闲鱼看了一下。其中大部分都是需要手动纠偏的，直到看到了一个名为<code>Garmin地图升级服务</code>的卖家，他描述声称可以完美叠加佳明自带的地图不需要纠偏，价格也很便宜才一杯奶茶钱。然后就下单尝试了一下，下单后会收到一个网盘链接，下载后会得到一个<code>NEW CHINA 20M TOPO.img</code>文件直接拷贝到手表的<code>Garmin</code>文件夹中即可，然后首先选择需要使用等高线的运动模式，长按左中键进入，点击<code>某某设置-向下滑找到地图-设置地图</code>，打开这个地图就行了，这里不需要关闭官方的地图，因为可以完美的叠加在官方地图上面，后续导入路书也不需要有纠偏的步骤可以直接使用，真的非常的方便。因为国内也就那些山就算再怎么开发整体地形不会有太大的变化所以也不需要经常更新地图，可以一直用下去。</p><h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>虽然白白耗费了好几个小时折腾，但确实学到了不少知识，也知晓了佳明地图的各种有趣玩法，比如可以导入街道地图等。这为以后的探索打下了一定基础，也算有所收获。不过，还是建议大家不要自行折腾，毕竟网络上相关内容极少。最好还是花点小钱，一步到位来得省心。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 🔍技巧杂烩 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 📦分享 </tag>
+            
+            <tag> 🔍技巧 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>简单利用python对成绩数据进行处理</title>
       <link href="/posts/dc46ef5d/"/>
       <url>/posts/dc46ef5d/</url>
