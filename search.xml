@@ -4,6 +4,35 @@
   
     
     <entry>
+      <title>解决佳明码表制作路书困难的方法</title>
+      <link href="/posts/fab670a9/"/>
+      <url>/posts/fab670a9/</url>
+      
+        <content type="html"><![CDATA[<h2 id="购买"><a href="#购买" class="headerlink" title="购买"></a>购买</h2><p>去年，因为跑马拉松的缘故，我购买了佳明的955 铁三表，也由此正式踏入了佳明的生态。</p><p>后来，为了让手表所提供的训练状态以及身体状况的监测数据更加准确，我常常会同时使用手表和码表来记录骑行数据。虽说手表在一定程度上能够替代码表，但实际用下来却感觉颇为麻烦，而且它的导航页面非常卡顿。</p><p>今年下半年，佳明的540码表降价了一千块，从那之后便一直对540佳明码表心心念念。于是，在前两天，我终于狠狠心咬咬牙，购买了佳明 540。</p><p>因为这个月我还购买了骑行台。为了能省点钱，我便在闲鱼上找了一个全新未拆封的佳明 540。价格是<code> 1750 元</code>，不仅带质保，还赠送了钢化膜和保护套。</p><p>经过两天的等待，码表终于到货了。迫不及待地进行了开箱，然后小心翼翼地贴上钢化膜，再开机进行探索。在简单确认码表没有问题之后，我将之前购买的一份等高线地图导入到了码表，在码表上能够完美显示出来。</p><div class="gallery">  <div class="fj-gallery page_img_lazyload  data" data-rowHeight="220" data-limit="10">    <span class="gallery-data">[{"url":"https://cdn.siax.cn/gh/L-20021213/picture@master/img/0241128222528.jpg","alt":""},{"url":"https://cdn.siax.cn/gh/L-20021213/picture@master/img/241128222626.jpg","alt":""}]</span>  </div><button class="gallery-load-more" style="opacity:0">  <span>加载更多</span>  <i class="anzhiyufont anzhiyu-icon-arrow-down"></i>  </button></div><h2 id="路书制作"><a href="#路书制作" class="headerlink" title="路书制作"></a>路书制作</h2><p>在我从迹驰更换到佳明的过程中，不少人都跟我讲佳明的导航功能用起来很费劲，甚至还比不上迹驰。不过，经过我自己的一番摸索尝试，找到了一个解决的办法，而这个办法的关键就在于高驰的APP。</p><p>下面我先来讲讲我的思路。高驰 APP 接入的是高德地图，这一点和迹驰是相同的，所以从理论上来说，它们所生成的路线也应该是一样的。而且，高驰的 APP 是能够直接导出文件的，理论上可以一键制作路线然后导出，这便给我提供了一定的操作空间。那么让我尝试一下:</p><ol><li><p>首先，我们需要在手机上下载<code>高驰 APP</code>，完成注册并登录账号。</p></li><li><p>登录成功后，点击 APP 底部的<code>探索</code>按钮，接着在弹出的页面中点击<code>创建路线 - 公路骑行</code>选项。</p><img src="https://cdn.siax.cn/gh/L-20021213/picture@master/img/20241128223843.jpg" alt="点击查看"  style="zoom: 33%;" /></li><li><p>这时，我们可以看到右上角有<code>定位</code>按钮和<code>搜索</code>按钮。先点击<code>定位</code>按钮，它能够快速定位到我们当前所在的位置，然后在手机屏幕上点击一下当前位置，这样就设置好了起点。</p><img src="https://cdn.siax.cn/gh/L-20021213/picture@master/img/20241128224010.jpg" alt="点击查看"  style="zoom: 33%;" /></li><li><p>随后，点击右上角的<code>搜索</code>按钮，在这里可以一键输入并搜索目的地，完成搜索后，页面会快速跳转到目的地的定位，我们在屏幕上点一下目的地的位置，便设置好了终点。</p></li><li><p>如果在骑行过程中有添加标记点的需求。我们可以在下方的工具栏中选择<code>添加标记点</code>选项，设置好之后，这些标记点是可以直接完美同步到佳明APP的。</p></li><li><p>当起点、终点以及标记点（如有需要）都设置完毕后，点击右上角的 “完成” 按钮来保存线路。这里要注意，路线名称不需要填写，因为后面还要重新修改，现在直接点击<code>保存</code>就可以。</p></li><li><p>保存好路线后，点击左下角的<code>分享</code>按钮，此时我们可以看到能够以文件的形式进行分享，接着点击<code>GPX</code>格式，然后将其分享到微信，随便分享给一个好友就行。</p><img src="https://cdn.siax.cn/gh/L-20021213/picture@master/img/241128224109.jpg" alt="点击查看" style="zoom:33%;" /></li><li><p>然后，我们去到微信的聊天框，点击刚刚分享的路线文件，在弹出的选项中选择<code>用其他应用打开</code>，再选择<code>Connect</code>，这样就会自动跳转到佳明的 APP 啦。</p></li></ol>  <div class="gallery">  <div class="fj-gallery page_img_lazyload  data" data-rowHeight="220" data-limit="10">    <span class="gallery-data">[{"url":"https://cdn.siax.cn/gh/L-20021213/picture@master/img/1128224202.jpg","alt":"点击查看"},{"url":"https://cdn.siax.cn/gh/L-20021213/picture@master/img/20241128224210.jpg","alt":"点击查看"}]</span>  </div><button class="gallery-load-more" style="opacity:0">  <span>加载更多</span>  <i class="anzhiyufont anzhiyu-icon-arrow-down"></i>  </button></div><ol start="9"><li>最后，在佳明的 APP 中选择 需要的<code>骑行模式</code>，然后对保存的路线进行<code>重命名</code>，完成重命名后就可以同步到佳明设备上了。</li></ol><h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>换佳明码表，于我而言，不仅仅是完成了今年的一个小小心愿，更是一次对热爱的追逐，对生活积极奔赴的见证。<code>在这青春正好的时光里，就应如这般，想买的好物莫迟疑，想做的事情即刻行，想去的远方抬脚就出发。</code>身处佳明的生态里，手表上每天直观地呈现训练状态与身体状况，时刻提醒着我关注自身。路书的制作，虽然步骤看着挺多且复杂，实际运用起来却很高效，使用熟练后短两分钟内就能完成路书制作并同步到码表开始导航，充分满足了我的使用需求。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> ✒️生活随笔 </category>
+          
+          <category> 📦干货分享 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 📦分享 </tag>
+            
+            <tag> 🔍技巧 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>智骑x2max上手体验</title>
       <link href="/posts/514424a0/"/>
       <url>/posts/514424a0/</url>
