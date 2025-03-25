@@ -246,6 +246,14 @@
   </div>
 
   <script>
+    // 新增返回 ISO 格式日期的函数
+    function getISODate(date) {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
     // 缓存节假日数据，避免重复请求
     const holidayCache = new Map();
 
@@ -290,14 +298,6 @@
       }
     }
 
-    // 生成日期简写，格式：YYMMDD
-    function getAbbreviation(date) {
-      const year = date.getFullYear().toString().slice(-2);
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const day = date.getDate().toString().padStart(2, '0');
-      return year + month + day;
-    }
-
     // 复制文本到剪贴板，并在按钮内显示临时提示
     function copyText(elem, text) {
       navigator.clipboard.writeText(text).then(() => {
@@ -307,6 +307,14 @@
         elem.innerText = "复制失败";
         setTimeout(() => { elem.innerText = text; }, 1000);
       });
+    }
+
+    // 生成日期简写，格式：YYMMDD
+    function getAbbreviation(date) {
+      const year = date.getFullYear().toString().slice(-2);
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return year + month + day;
     }
 
     // 日期解析，若格式无效则抛出错误
@@ -349,18 +357,20 @@
         : newDate;
     };
 
-    // 结果展示，包括起始日期、截止日期、日期简写、总天数及节假日信息
+    // 结果展示，包括起始日期、截止日期、日期简写、ISO 格式日期、总天数及节假日信息
     async function showResult(containerId, startDate, endDate) {
       const container = document.getElementById(containerId);
       const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' };
       container.innerHTML = `
         <div class="date-range">
           <div>
-            <i class="fas fa-play-circle fa-fw"></i> 起始日期：${startDate.toLocaleDateString('zh-CN', options)}
+            <i class="fas fa-play-circle fa-fw"></i> 起始日期：${startDate.toLocaleDateString('zh-CN', options)} 
+            <span class="copy-abbr" onclick="copyText(this, '${getISODate(startDate)}')">${getISODate(startDate)}</span>
             <span class="copy-abbr" onclick="copyText(this, '${getAbbreviation(startDate)}')">${getAbbreviation(startDate)}</span>
           </div>
           <div>
-            <i class="fas fa-flag-checkered fa-fw"></i> 截止日期：${endDate.toLocaleDateString('zh-CN', options)}
+            <i class="fas fa-flag-checkered fa-fw"></i> 截止日期：${endDate.toLocaleDateString('zh-CN', options)} 
+            <span class="copy-abbr" onclick="copyText(this, '${getISODate(endDate)}')">${getISODate(endDate)}</span>
             <span class="copy-abbr" onclick="copyText(this, '${getAbbreviation(endDate)}')">${getAbbreviation(endDate)}</span>
           </div>
           <div style="margin-top:1rem; color:var(--primary);">
@@ -398,7 +408,6 @@
             <button onclick="window.location.reload()" style="margin-top:0.5rem; padding:0.3rem 0.8rem; background:#fff3cd; border:1px solid #ffc107;">重试</button>
           </div>`;
       }
-      // 自动滚动到结果区域
       container.scrollIntoView({ behavior: 'smooth' });
     }
 
@@ -437,5 +446,6 @@
   </script>
 </body>
 </html>
+
 
 
