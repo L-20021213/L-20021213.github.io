@@ -4,8 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>百分比计算器</title>
-  <link rel="icon" type="image/ico" href="https://cdn.siax.cn/npm/picture-sianx@1.1.2/img/6945257127.png">
+  <title>百分比 & 打折计算器</title>
   <style>
     /* 全局设置，防止内边距和边框影响宽度 */
     *, *::before, *::after {
@@ -134,7 +133,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>🔢 百分比计算器</h1>
+    <h1>🔢 百分比 & 打折计算器</h1>
 
     <!-- 百分比计算模块 -->
     <div class="calculator-section">
@@ -149,6 +148,7 @@
       </div>
     </div>
 
+    <!-- 计算占比率 -->
     <div class="calculator-section">
       <h2>计算占比率</h2>
       <div class="input-group">
@@ -161,6 +161,7 @@
       </div>
     </div>
 
+    <!-- 反推原始数值 -->
     <div class="calculator-section">
       <h2>反推原始数值</h2>
       <div class="input-group">
@@ -173,6 +174,7 @@
       </div>
     </div>
 
+    <!-- 计算变化率 -->
     <div class="calculator-section">
       <h2>计算变化率</h2>
       <div class="input-group">
@@ -185,6 +187,7 @@
       </div>
     </div>
 
+    <!-- 含增减计算 -->
     <div class="calculator-section">
       <h2>含增减计算</h2>
       <div class="input-group">
@@ -312,7 +315,6 @@
       },
 
       // 计算打折后的金额
-      // 如果折扣值 >= 10 则认为输入为百分比形式（例如95折），否则认为输入为折数（例如9.5折）
       calcDiscount: () => {
         const original = calculator.validate(document.getElementById('originalAmount').value);
         const discount = calculator.validate(document.getElementById('discount').value);
@@ -321,11 +323,8 @@
 
         if (original.valid && discount.valid) {
           let factor;
-          if (discount.value >= 10) {
-            factor = discount.value / 100;
-          } else {
-            factor = discount.value / 10;
-          }
+          // 如果折扣值 >= 10 则认为输入为百分比形式（如 95 折），否则认为输入为折数（如 9.5 折）
+          factor = discount.value >= 10 ? discount.value / 100 : discount.value / 10;
           result.textContent = (original.value * factor).toFixed(2);
           error.textContent = '';
         } else {
@@ -335,15 +334,20 @@
       }
     };
 
-    // 事件监听，统一触发所有计算
-    document.querySelectorAll('input, select').forEach(element => {
-      element.addEventListener('input', () => {
-        calculator.calcPercentage();
-        calculator.calcProportion();
-        calculator.calcOriginal();
-        calculator.calcChange();
-        calculator.calcAdjustment();
-        calculator.calcDiscount();
+    // 批量调用所有计算函数
+    function runCalculators() {
+      calculator.calcPercentage();
+      calculator.calcProportion();
+      calculator.calcOriginal();
+      calculator.calcChange();
+      calculator.calcAdjustment();
+      calculator.calcDiscount();
+    }
+
+    // 绑定事件监听（输入时触发重新计算）
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('input, select').forEach(element => {
+        element.addEventListener('input', runCalculators);
       });
     });
 
@@ -352,13 +356,6 @@
       document.querySelectorAll('input').forEach(i => i.value = '');
       document.querySelectorAll('.result-box').forEach(r => r.textContent = '');
       document.querySelectorAll('.error-message').forEach(e => e.textContent = '');
-    }
-
-    // 初始化示例
-    window.onload = () => {
-      document.getElementById('value1').value = 200;
-      document.getElementById('percent1').value = 15;
-      calculator.calcPercentage();
     }
   </script>
 </body>
