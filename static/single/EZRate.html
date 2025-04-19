@@ -1,1 +1,364 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>百分比 & 打折计算器</title><style>*,::after,::before{box-sizing:border-box}:root{--primary-color:#2196F3;--error-color:#ff4444;--success-color:#00C851;--border-radius:0.5rem;--input-padding:0.625rem;--font-size:1rem}body,html{margin:0;padding:0;overflow-x:hidden;background:#fff}.container{max-width:600px;width:100%;margin:1.25rem auto;padding:0 1rem}body{font-family:'Segoe UI',Arial,sans-serif;line-height:1.6}h1,h2{text-align:center}.calculator-section{background:#f8f9fa;border-radius:var(--border-radius);padding:1.25rem;margin:1.25rem 0;box-shadow:0 .125rem .5rem rgba(0,0,0,.1);width:100%}.input-group{margin:1rem 0;display:flex;align-items:center;gap:.625rem;flex-wrap:wrap;width:100%}.input-group input,.input-group select,.result-box{flex:1 1 140px;min-width:100px;padding:var(--input-padding);font-size:var(--font-size);border:.125rem solid #ddd;border-radius:var(--border-radius);transition:border-color .3s;background:#fff}.input-group input:focus,.input-group select:focus{border-color:var(--primary-color);outline:0}.result-box{display:inline-flex;align-items:center;justify-content:center;min-width:120px;height:2.5rem;border:.125rem solid var(--primary-color);color:var(--primary-color);font-weight:700}.error-message{color:var(--error-color);font-size:.875rem;margin-top:.3125rem;height:1.25rem;width:100%}button{background:var(--primary-color);color:#fff;border:none;padding:.75rem 1.5rem;border-radius:var(--border-radius);cursor:pointer;transition:transform .2s;font-size:var(--font-size);display:block;margin:1.25rem auto}button:hover{transform:translateY(-.125rem)}@media (max-width:600px){.input-group{flex-direction:column;align-items:stretch}.input-group input,.input-group select,.result-box{flex:unset;width:100%}}</style></head><body><div class="container"><h1>🔢 百分比 & 打折计算器</h1><div class="calculator-section"><h2>计算百分比值</h2><div class="input-group"><input type="number" id="value1" placeholder="数值"> <span>的</span> <input type="number" id="percent1" placeholder="百分比"> <span>% =</span><div class="result-box" id="result1"></div><div class="error-message" id="error1"></div></div></div><div class="calculator-section"><h2>计算占比率</h2><div class="input-group"><input type="number" id="part" placeholder="部分值"> <span>占</span> <input type="number" id="whole" placeholder="总值"> <span>的百分比 =</span><div class="result-box" id="result2"></div><div class="error-message" id="error2"></div></div></div><div class="calculator-section"><h2>反推原始数值</h2><div class="input-group"><input type="number" id="knownValue" placeholder="已知值"> <span>是原数的</span> <input type="number" id="percent3" placeholder="百分比"> <span>% → 原数 =</span><div class="result-box" id="result3"></div><div class="error-message" id="error3"></div></div></div><div class="calculator-section"><h2>计算变化率</h2><div class="input-group"><input type="number" id="oldValue" placeholder="旧值"> <span>→</span> <input type="number" id="newValue" placeholder="新值"> <span>变化率 =</span><div class="result-box" id="result4"></div><div class="error-message" id="error4"></div></div></div><div class="calculator-section"><h2>含增减计算</h2><div class="input-group"><input type="number" id="base" placeholder="基础值"> <select id="operation"><option value="+">增加</option><option value="-">减少</option></select> <input type="number" id="percent5" placeholder="百分比"> <span>% → 结果 =</span><div class="result-box" id="result5"></div><div class="error-message" id="error5"></div></div></div><div class="calculator-section"><h2>打折计算</h2><div class="input-group"><input type="number" id="originalAmount" placeholder="原始金额"> <span>折扣</span> <input type="number" id="discount" placeholder="请输入折扣（如95或9.5）"> <span>折后金额 =</span><div class="result-box" id="resultDiscount"></div><div class="error-message" id="errorDiscount"></div></div></div><button class="clear-btn" onclick="clearAll()">🗑️ 清除所有数据</button></div><script>const calculator={validate:(e,t=!0)=>{if(""===e)return{valid:!1};const l=parseFloat(e);return{valid:!isNaN(l)&&(t||0!==l),value:l}},calcPercentage:()=>{const e=calculator.validate(document.getElementById("value1").value),t=calculator.validate(document.getElementById("percent1").value),l=document.getElementById("result1"),n=document.getElementById("error1");e.valid&&t.valid?(l.textContent=(e.value*t.value/100).toFixed(2),n.textContent=""):(l.textContent="",n.textContent="请输入有效数字")},calcProportion:()=>{const e=calculator.validate(document.getElementById("part").value),t=calculator.validate(document.getElementById("whole").value,!1),l=document.getElementById("result2"),n=document.getElementById("error2");e.valid&&t.valid?(l.textContent=`${(e.value/t.value*100).toFixed(2)}%`,n.textContent=""):(l.textContent="",n.textContent=t.valid?"请输入有效数字":"总值不能为零")},calcOriginal:()=>{const e=calculator.validate(document.getElementById("knownValue").value),t=calculator.validate(document.getElementById("percent3").value,!1),l=document.getElementById("result3"),n=document.getElementById("error3");e.valid&&t.valid?(l.textContent=(e.value/(t.value/100)).toFixed(2),n.textContent=""):(l.textContent="",n.textContent=t.valid?"请输入有效数字":"百分比不能为零")},calcChange:()=>{const e=calculator.validate(document.getElementById("oldValue").value,!1),t=calculator.validate(document.getElementById("newValue").value),l=document.getElementById("result4"),n=document.getElementById("error4");if(e.valid&&t.valid){const a=((t.value-e.value)/e.value*100).toFixed(2);l.textContent=`${a}%`,n.textContent=""}else l.textContent="",n.textContent=e.valid?"请输入有效数字":"旧值不能为零"},calcAdjustment:()=>{const e=calculator.validate(document.getElementById("base").value),t=calculator.validate(document.getElementById("percent5").value),l=document.getElementById("operation").value,n=document.getElementById("result5"),a=document.getElementById("error5");if(e.valid&&t.valid){const o=1+("+"===l?t.value/100:-t.value/100);n.textContent=(e.value*o).toFixed(2),a.textContent=""}else n.textContent="",a.textContent="请输入有效数字"},calcDiscount:()=>{const e=calculator.validate(document.getElementById("originalAmount").value),t=calculator.validate(document.getElementById("discount").value),l=document.getElementById("resultDiscount"),n=document.getElementById("errorDiscount");if(e.valid&&t.valid){let a;a=t.value>=10?t.value/100:t.value/10,l.textContent=(e.value*a).toFixed(2),n.textContent=""}else l.textContent="",n.textContent="请输入有效数字"}};function runCalculators(){calculator.calcPercentage(),calculator.calcProportion(),calculator.calcOriginal(),calculator.calcChange(),calculator.calcAdjustment(),calculator.calcDiscount()}function clearAll(){document.querySelectorAll("input").forEach((e=>e.value="")),document.querySelectorAll(".result-box").forEach((e=>e.textContent="")),document.querySelectorAll(".error-message").forEach((e=>e.textContent=""))}document.addEventListener("DOMContentLoaded",(()=>{document.querySelectorAll("input, select").forEach((e=>{e.addEventListener("input",runCalculators)}))}))</script></body></html>
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>百分比 & 打折计算器</title>
+  <style>
+    /* 全局设置，防止内边距和边框影响宽度 */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-color: #2196F3;
+      --error-color: #ff4444;
+      --success-color: #00C851;
+      --border-radius: 0.5rem;
+      --input-padding: 0.625rem;
+      --font-size: 1rem;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      background: #fff;
+    }
+
+    /* 居中容器，保证左右留白 */
+    .container {
+      max-width: 600px;
+      width: 100%;
+      margin: 1.25rem auto;
+      padding: 0 1rem;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .calculator-section {
+      background: #f8f9fa;
+      border-radius: var(--border-radius);
+      padding: 1.25rem;
+      margin: 1.25rem 0;
+      box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.1);
+      width: 100%;
+    }
+
+    .input-group {
+      margin: 1rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .input-group input,
+    .input-group select,
+    .result-box {
+      flex: 1 1 140px;
+      min-width: 100px;
+      padding: var(--input-padding);
+      font-size: var(--font-size);
+      border: 0.125rem solid #ddd;
+      border-radius: var(--border-radius);
+      transition: border-color 0.3s;
+      background: #fff;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+      border-color: var(--primary-color);
+      outline: none;
+    }
+
+    .result-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 120px;
+      height: 2.5rem;
+      border: 0.125rem solid var(--primary-color);
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+
+    .error-message {
+      color: var(--error-color);
+      font-size: 0.875rem;
+      margin-top: 0.3125rem;
+      height: 1.25rem;
+      width: 100%;
+    }
+
+    button {
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: transform 0.2s;
+      font-size: var(--font-size);
+      display: block;
+      margin: 1.25rem auto;
+    }
+
+    button:hover {
+      transform: translateY(-0.125rem);
+    }
+
+    @media (max-width: 600px) {
+      .input-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .input-group input,
+      .input-group select,
+      .result-box {
+        flex: unset;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔢 百分比 & 打折计算器</h1>
+
+    <!-- 百分比计算模块 -->
+    <div class="calculator-section">
+      <h2>计算百分比值</h2>
+      <div class="input-group">
+        <input type="number" id="value1" placeholder="数值">
+        <span>的</span>
+        <input type="number" id="percent1" placeholder="百分比">
+        <span>% =</span>
+        <div class="result-box" id="result1"></div>
+        <div class="error-message" id="error1"></div>
+      </div>
+    </div>
+
+    <!-- 计算占比率 -->
+    <div class="calculator-section">
+      <h2>计算占比率</h2>
+      <div class="input-group">
+        <input type="number" id="part" placeholder="部分值">
+        <span>占</span>
+        <input type="number" id="whole" placeholder="总值">
+        <span>的百分比 =</span>
+        <div class="result-box" id="result2"></div>
+        <div class="error-message" id="error2"></div>
+      </div>
+    </div>
+
+    <!-- 反推原始数值 -->
+    <div class="calculator-section">
+      <h2>反推原始数值</h2>
+      <div class="input-group">
+        <input type="number" id="knownValue" placeholder="已知值">
+        <span>是原数的</span>
+        <input type="number" id="percent3" placeholder="百分比">
+        <span>% → 原数 =</span>
+        <div class="result-box" id="result3"></div>
+        <div class="error-message" id="error3"></div>
+      </div>
+    </div>
+
+    <!-- 计算变化率 -->
+    <div class="calculator-section">
+      <h2>计算变化率</h2>
+      <div class="input-group">
+        <input type="number" id="oldValue" placeholder="旧值">
+        <span>→</span>
+        <input type="number" id="newValue" placeholder="新值">
+        <span>变化率 =</span>
+        <div class="result-box" id="result4"></div>
+        <div class="error-message" id="error4"></div>
+      </div>
+    </div>
+
+    <!-- 含增减计算 -->
+    <div class="calculator-section">
+      <h2>含增减计算</h2>
+      <div class="input-group">
+        <input type="number" id="base" placeholder="基础值">
+        <select id="operation">
+          <option value="+">增加</option>
+          <option value="-">减少</option>
+        </select>
+        <input type="number" id="percent5" placeholder="百分比">
+        <span>% → 结果 =</span>
+        <div class="result-box" id="result5"></div>
+        <div class="error-message" id="error5"></div>
+      </div>
+    </div>
+
+    <!-- 打折计算模块 -->
+    <div class="calculator-section">
+      <h2>打折计算</h2>
+      <div class="input-group">
+        <input type="number" id="originalAmount" placeholder="原始金额">
+        <span>折扣</span>
+        <input type="number" id="discount" placeholder="请输入折扣（如95或9.5）">
+        <span>折后金额 =</span>
+        <div class="result-box" id="resultDiscount"></div>
+        <div class="error-message" id="errorDiscount"></div>
+      </div>
+    </div>
+
+    <button class="clear-btn" onclick="clearAll()">🗑️ 清除所有数据</button>
+  </div>
+
+  <script>
+    const calculator = {
+      // 通用验证方法
+      validate: (value, isZeroAllowed = true) => {
+        if (value === '') return { valid: false };
+        const num = parseFloat(value);
+        return {
+          valid: !isNaN(num) && (isZeroAllowed || num !== 0),
+          value: num
+        };
+      },
+
+      // 计算百分比值
+      calcPercentage: () => {
+        const val1 = calculator.validate(document.getElementById('value1').value);
+        const val2 = calculator.validate(document.getElementById('percent1').value);
+        const result = document.getElementById('result1');
+        const error = document.getElementById('error1');
+
+        if (val1.valid && val2.valid) {
+          result.textContent = (val1.value * val2.value / 100).toFixed(2);
+          error.textContent = '';
+        } else {
+          result.textContent = '';
+          error.textContent = '请输入有效数字';
+        }
+      },
+
+      // 计算占比率
+      calcProportion: () => {
+        const part = calculator.validate(document.getElementById('part').value);
+        const whole = calculator.validate(document.getElementById('whole').value, false);
+        const result = document.getElementById('result2');
+        const error = document.getElementById('error2');
+
+        if (part.valid && whole.valid) {
+          result.textContent = `${(part.value / whole.value * 100).toFixed(2)}%`;
+          error.textContent = '';
+        } else {
+          result.textContent = '';
+          error.textContent = whole.valid ? '请输入有效数字' : '总值不能为零';
+        }
+      },
+
+      // 反推原数
+      calcOriginal: () => {
+        const known = calculator.validate(document.getElementById('knownValue').value);
+        const percent = calculator.validate(document.getElementById('percent3').value, false);
+        const result = document.getElementById('result3');
+        const error = document.getElementById('error3');
+
+        if (known.valid && percent.valid) {
+          result.textContent = (known.value / (percent.value / 100)).toFixed(2);
+          error.textContent = '';
+        } else {
+          result.textContent = '';
+          error.textContent = percent.valid ? '请输入有效数字' : '百分比不能为零';
+        }
+      },
+
+      // 计算变化率
+      calcChange: () => {
+        const oldVal = calculator.validate(document.getElementById('oldValue').value, false);
+        const newVal = calculator.validate(document.getElementById('newValue').value);
+        const result = document.getElementById('result4');
+        const error = document.getElementById('error4');
+
+        if (oldVal.valid && newVal.valid) {
+          const change = ((newVal.value - oldVal.value) / oldVal.value * 100).toFixed(2);
+          result.textContent = `${change}%`;
+          error.textContent = '';
+        } else {
+          result.textContent = '';
+          error.textContent = oldVal.valid ? '请输入有效数字' : '旧值不能为零';
+        }
+      },
+
+      // 增减计算
+      calcAdjustment: () => {
+        const base = calculator.validate(document.getElementById('base').value);
+        const percent = calculator.validate(document.getElementById('percent5').value);
+        const operation = document.getElementById('operation').value;
+        const result = document.getElementById('result5');
+        const error = document.getElementById('error5');
+
+        if (base.valid && percent.valid) {
+          const multiplier = 1 + (operation === '+' ? percent.value / 100 : -percent.value / 100);
+          result.textContent = (base.value * multiplier).toFixed(2);
+          error.textContent = '';
+        } else {
+          result.textContent = '';
+          error.textContent = '请输入有效数字';
+        }
+      },
+
+      // 计算打折后的金额
+      calcDiscount: () => {
+        const original = calculator.validate(document.getElementById('originalAmount').value);
+        const discount = calculator.validate(document.getElementById('discount').value);
+        const result = document.getElementById('resultDiscount');
+        const error = document.getElementById('errorDiscount');
+
+        if (original.valid && discount.valid) {
+          let factor;
+          // 如果折扣值 >= 10 则认为输入为百分比形式（如 95 折），否则认为输入为折数（如 9.5 折）
+          factor = discount.value >= 10 ? discount.value / 100 : discount.value / 10;
+          result.textContent = (original.value * factor).toFixed(2);
+          error.textContent = '';
+        } else {
+          result.textContent = '';
+          error.textContent = '请输入有效数字';
+        }
+      }
+    };
+
+    // 批量调用所有计算函数
+    function runCalculators() {
+      calculator.calcPercentage();
+      calculator.calcProportion();
+      calculator.calcOriginal();
+      calculator.calcChange();
+      calculator.calcAdjustment();
+      calculator.calcDiscount();
+    }
+
+    // 绑定事件监听（输入时触发重新计算）
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('input, select').forEach(element => {
+        element.addEventListener('input', runCalculators);
+      });
+    });
+
+    // 清除功能，清空所有输入框和结果显示
+    function clearAll() {
+      document.querySelectorAll('input').forEach(i => i.value = '');
+      document.querySelectorAll('.result-box').forEach(r => r.textContent = '');
+      document.querySelectorAll('.error-message').forEach(e => e.textContent = '');
+    }
+  </script>
+</body>
+</html>
+
+
