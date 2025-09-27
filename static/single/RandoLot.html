@@ -88,7 +88,7 @@
                 随机抽签，公平公正
             </h2>
             <p class="text-gray-600 max-w-2xl mx-auto text-[clamp(1rem,2vw,1.2rem)]">
-                上传您的Excel文件，选择抽签列，开始随机抽签。
+                上传您的Excel文件，选择抽签列，开始随机抽签。每个项目只能中签一次。
             </p>
         </section>
 
@@ -174,11 +174,15 @@
                     <div class="flex space-x-2">
                         <span id="total-count"
                             class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
-                            总人数: <span id="total-number">0</span>
+                            总数: <span id="total-number">0</span>
                         </span>
                         <span id="picked-count"
                             class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
                             已抽: <span id="picked-number">0</span>
+                        </span>
+                        <span id="remaining-count"
+                            class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+                            剩余: <span id="remaining-number">0</span>
                         </span>
                     </div>
                 </div>
@@ -247,10 +251,12 @@
         // 全局变量
         let excelData = null;
         let nameColumn = null;
-        let names = [];
-        let pickedNames = [];
+        let items = [];               // 所有项目列表
+        let pickedItems = [];         // 已中签项目列表
+        let remainingItems = [];      // 剩余未抽项目列表
         let isSelecting = false;
         let selectionInterval = null;
+        let currentRandomIndex = -1;  // 记录当前随机选中的索引
 
         // DOM 元素
         const fileInput = document.getElementById('file-input');
@@ -269,8 +275,9 @@
         const pickName = document.getElementById('pick-name');
         const resetSelection = document.getElementById('reset-selection');
         const backToUpload = document.getElementById('back-to-upload');
-        const totalCount = document.getElementById('total-number');
-        const pickedCount = document.getElementById('picked-number');
+        const totalNumber = document.getElementById('total-number');
+        const pickedNumber = document.getElementById('picked-number');
+        const remainingNumber = document.getElementById('remaining-number');
         const historySection = document.getElementById('history-section');
         const historyList = document.getElementById('history-list');
         const clearHistory = document.getElementById('clear-history');
@@ -279,15 +286,13 @@
 
         // 页面加载完成后执行
         document.addEventListener('DOMContentLoaded', () => {
-            // 文件选择按钮点击事件
+            // 事件监听设置...
             fileSelectBtn.addEventListener('click', () => {
                 fileInput.click();
             });
 
-            // 文件选择事件
             fileInput.addEventListener('change', handleFileSelect);
 
-            // 拖放事件
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 dropArea.addEventListener(eventName, preventDefaults, false);
             });
@@ -326,7 +331,6 @@
                 }
             }
 
-            // 移除文件
             removeFile.addEventListener('click', () => {
                 resetFileInput();
             });
@@ -339,27 +343,23 @@
                     return;
                 }
 
-                // 提取抽签列表，修复处理数字类型的问题
-                names = excelData.map(row => row[nameColumn]).filter(name => {
-                    return name !== undefined && name !== null && String(name).trim() !== '';
+                // 提取抽签列表
+                items = excelData.map(row => row[nameColumn]).filter(item => {
+                    return item !== undefined && item !== null && String(item).trim() !== '';
                 });
 
-                if (names.length === 0) {
+                if (items.length === 0) {
                     showToast('所选列中没有找到有效抽签项', 'error');
                     return;
                 }
 
-                // 更新计数
-                totalCount.textContent = names.length;
-                pickedCount.textContent = pickedNames.length;
-
+                // 初始化抽签状态
+                resetDrawState();
+                
                 // 显示抽签区域，隐藏其他区域
                 columnSelection.classList.add('hidden');
                 selectionArea.classList.remove('hidden');
                 historySection.classList.remove('hidden');
-
-                // 更新历史记录
-                updateHistoryList();
             });
 
             // 抽签按钮
@@ -368,7 +368,7 @@
                     stopSelection();
                 } else {
                     // 检查是否所有抽签项都已被选中
-                    if (pickedNames.length >= names.length) {
+                    if (remainingItems.length === 0) {
                         showToast('所有抽签项都已被抽中！', 'info');
                         resetSelection.click();
                         return;
@@ -380,16 +380,7 @@
 
             // 重置抽签
             resetSelection.addEventListener('click', () => {
-                if (isSelecting) {
-                    stopSelection();
-                }
-
-                pickedNames = [];
-                nameBox.textContent = '点击开始按钮';
-                nameBox.classList.remove('name-selected');
-                nameDisplay.querySelector('p').textContent = '准备开始';
-                pickedCount.textContent = '0';
-                updateHistoryList();
+                resetDrawState();
             });
 
             // 返回上传页面
@@ -403,13 +394,33 @@
                 columnSelection.classList.remove('hidden');
             });
 
-            // 清空历史记录
+            // 清空历史记录（等同于重置）
             clearHistory.addEventListener('click', () => {
-                pickedNames = [];
-                pickedCount.textContent = '0';
-                updateHistoryList();
+                resetDrawState();
             });
         });
+
+        // 重置抽签状态
+        function resetDrawState() {
+            if (isSelecting) {
+                stopSelection();
+            }
+
+            // 重置为初始状态，所有项目都未被抽取
+            pickedItems = [];
+            remainingItems = [...items]; // 复制所有项目到剩余列表
+            currentRandomIndex = -1;
+            nameBox.textContent = '点击开始按钮';
+            nameBox.classList.remove('name-selected');
+            nameDisplay.querySelector('p').textContent = '准备开始';
+            
+            // 更新计数显示
+            totalNumber.textContent = items.length;
+            pickedNumber.textContent = '0';
+            remainingNumber.textContent = items.length;
+            
+            updateHistoryList();
+        }
 
         // 处理文件选择
         function handleFileSelect(e) {
@@ -486,10 +497,12 @@
             columnSelection.classList.add('hidden');
             selectionArea.classList.add('hidden');
             historySection.classList.add('hidden');
-            pickedNames = [];
-            names = [];
-            totalCount.textContent = '0';
-            pickedCount.textContent = '0';
+            pickedItems = [];
+            items = [];
+            remainingItems = [];
+            totalNumber.textContent = '0';
+            pickedNumber.textContent = '0';
+            remainingNumber.textContent = '0';
             historyList.innerHTML = '';
         }
 
@@ -507,7 +520,7 @@
         // 显示提示信息
         function showToast(message, type) {
             const toast = document.createElement('div');
-            toast.classList.add('fixed', 'top-4', 'right-4', 'bg-white', 'shadow-lg', 'rounded-md', 'px-4', 'py-2', 'z-50');
+            toast.classList.add('fixed', 'top-4', 'right-4', 'bg-white', 'shadow-lg', 'rounded-md', 'px-4', 'py-2', 'z-50', 'transition-all', 'duration-300', 'ease-in-out');
             if (type === 'error') {
                 toast.classList.add('border-l-4', 'border-red-500');
             } else if (type === 'info') {
@@ -516,7 +529,8 @@
             toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => {
-                toast.remove();
+                toast.classList.add('opacity-0', 'translate-x-4');
+                setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
 
@@ -534,12 +548,17 @@
         // 开始抽签动画
         function startSelectionAnimation() {
             isSelecting = true;
-            pickName.textContent = '停止';
+            pickName.innerHTML = '<i class="fa-solid fa-stop mr-2"></i>停止';
+            
+            // 移除高亮效果
+            nameBox.classList.remove('name-selected');
+            
+            // 只从剩余未抽的项目中随机选择
             selectionInterval = setInterval(() => {
-                let availableNames = names.filter(name => !pickedNames.includes(name));
-                if (availableNames.length > 0) {
-                    let randomIndex = Math.floor(Math.random() * availableNames.length);
-                    nameBox.textContent = availableNames[randomIndex];
+                if (remainingItems.length > 0) {
+                    // 记录当前随机索引，而不仅仅是名称
+                    currentRandomIndex = Math.floor(Math.random() * remainingItems.length);
+                    nameBox.textContent = remainingItems[currentRandomIndex];
                 }
             }, 100);
         }
@@ -547,30 +566,60 @@
         // 停止抽签动画
         function stopSelection() {
             isSelecting = false;
-            pickName.textContent = '抽签';
+            pickName.innerHTML = '<i class="fa-solid fa-hand-pointer mr-2"></i>抽签';
             clearInterval(selectionInterval);
-            let selectedName = nameBox.textContent;
-            if (!pickedNames.includes(selectedName)) {
-                pickedNames.push(selectedName);
-                pickedCount.textContent = pickedNames.length;
+            
+            // 使用记录的索引来处理选中项，而不是依赖名称匹配
+            if (currentRandomIndex !== -1 && currentRandomIndex < remainingItems.length) {
+                // 获取选中的项目
+                let selectedItem = remainingItems[currentRandomIndex];
+                
+                // 从剩余列表中移除选中的项目（通过索引，更可靠）
+                remainingItems.splice(currentRandomIndex, 1);
+                
+                // 添加到已选列表
+                pickedItems.push(selectedItem);
+                
+                // 更新计数和UI
+                pickedNumber.textContent = pickedItems.length;
+                remainingNumber.textContent = remainingItems.length;
                 nameBox.classList.add('name-selected');
                 updateHistoryList();
+                
+                // 重置当前随机索引
+                currentRandomIndex = -1;
+            } else {
+                // 异常情况处理
+                showToast('发生错误，无法完成抽签', 'error');
+                console.error('抽签错误: 无效的索引', currentRandomIndex, remainingItems.length);
+                // 尝试恢复
+                if (remainingItems.length > 0) {
+                    currentRandomIndex = 0;
+                }
+            }
+            
+            // 如果所有项目都已抽取，显示提示
+            if (remainingItems.length === 0) {
+                showToast('所有项目都已抽取完毕！', 'info');
             }
         }
 
         // 更新历史记录列表
         function updateHistoryList() {
             historyList.innerHTML = '';
-            pickedNames.forEach(name => {
-                const item = document.createElement('div');
-                item.classList.add('bg-gray-100', 'rounded-md', 'px-3', 'py-2', 'text-center');
-                item.textContent = name;
-                historyList.appendChild(item);
+            pickedItems.forEach((item, index) => {
+                const historyItem = document.createElement('div');
+                historyItem.classList.add('bg-gray-100', 'rounded-md', 'px-3', 'py-2', 'text-center', 'transition-all');
+                // 为每个历史项添加编号，清晰显示抽签顺序
+                historyItem.innerHTML = `<span class="text-xs text-gray-500">#${index + 1}</span><br>${item}`;
+                historyList.appendChild(historyItem);
             });
         }
     </script>
 </body>
 
 </html>
+    
+
 
 
