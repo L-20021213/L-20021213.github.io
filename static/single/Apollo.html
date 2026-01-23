@@ -1,0 +1,1282 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apollo - 全参数动态闪光灯曝光计算器</title>
+    <link rel="icon" type="image/ico" href="https://cdn.jsdelivr.net/npm/picture-sianx@1.1.2/img/6945257127.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#64748B',
+                        success: '#10B981',
+                        warning: '#F59E0B',
+                        danger: '#EF4444',
+                        neutral: '#F1F5F9',
+                        dark: '#1E293B',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .input-focus {
+                @apply focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none;
+            }
+            .card-shadow {
+                @apply shadow-lg shadow-gray-100/80;
+            }
+            .transition-all-300 {
+                @apply transition-all duration-300 ease-in-out;
+            }
+            .status-border-success {
+                @apply border-success ring-2 ring-success/20;
+            }
+            .status-border-warning {
+                @apply border-warning ring-2 ring-warning/20;
+            }
+            .status-border-danger {
+                @apply border-danger ring-2 ring-danger/20;
+            }
+            .recently-updated {
+                @apply border-primary animate-pulse;
+            }
+            .param-pill {
+                @apply bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm flex items-center gap-2;
+            }
+            .input-warning {
+                @apply border-warning focus:border-warning focus:ring-warning/20;
+            }
+            .param-prefix {
+                @apply font-bold text-gray-500;
+            }
+            
+            /* 双按钮 Pill 样式 */
+            .pill-toggle {
+                @apply inline-flex rounded-full overflow-hidden border border-gray-200;
+            }
+            .pill-button {
+                @apply px-4 py-1.5 text-sm font-medium transition-all duration-200 ease-in-out cursor-pointer;
+            }
+            .pill-button:first-child {
+                @apply rounded-l-full;
+            }
+            .pill-button:last-child {
+                @apply rounded-r-full;
+            }
+            .pill-button:not(.active) {
+                @apply bg-white text-gray-600 hover:bg-gray-50;
+            }
+            .pill-button.active {
+                @apply bg-primary text-white hover:bg-primary/90;
+            }
+            .pill-button:focus {
+                @apply outline-none ring-2 ring-primary/30;
+            }
+            
+            /* 输入框和按钮动画 */
+            .form-group input {
+                @apply transition-all duration-200 ease-in-out;
+            }
+            .form-group input:hover:not(:focus) {
+                @apply border-gray-400;
+            }
+            .btn-hover-effect {
+                @apply transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200;
+            }
+            
+            /* 参数范围提示样式 */
+            .param-range-section {
+                @apply mt-8 p-5 bg-gray-50 rounded-xl border border-gray-200;
+            }
+            .range-table {
+                @apply w-full text-sm;
+            }
+            .range-table th {
+                @apply py-3 px-2 text-left text-gray-700 font-semibold;
+            }
+            .range-table td {
+                @apply py-2 px-2 text-gray-600 border-t border-gray-100;
+            }
+            .range-table tr:hover td {
+                @apply bg-gray-50;
+            }
+            
+            /* 锁定按钮样式 */
+            .lock-btn {
+                @apply absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200;
+            }
+            .lock-btn.unlocked {
+                @apply text-gray-400 hover:text-primary hover:bg-primary/10;
+            }
+            .lock-btn.locked {
+                @apply text-primary bg-primary/10;
+            }
+            .lock-btn.temp-locked {
+                @apply text-warning bg-warning/10;
+            }
+            
+            /* 范围限制提示 */
+            .range-limit-warning {
+                @apply text-xs text-warning mt-1 flex items-center;
+            }
+            
+            /* 移除输入框上下调节按钮 */
+            input[type="number"]::-webkit-inner-spin-button,
+            input[type="number"]::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            input[type="number"] {
+                -moz-appearance: textfield;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-inter text-dark min-h-screen">
+    <div class="max-w-2xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-xl p-6 md:p-8 card-shadow transition-all duration-300 hover:shadow-xl">
+            <div class="text-center mb-8">
+                <h1 class="text-[clamp(1.5rem,3vw,2.25rem)] font-bold text-dark mb-2">
+                    <i class="fa fa-sun-o text-warning mr-2"></i>Apollo
+                    <span class="block text-[clamp(1rem,2vw,1.5rem)] mt-1">全参数动态闪光灯曝光计算器</span>
+                </h1>
+                <p class="text-gray-500">调整任何参数，其他参数将实时自动优化</p>
+            </div>
+            
+            <div class="mb-6 p-4 bg-primary/5 rounded-lg border border-primary/10">
+                <p class="text-sm text-primary mb-3">
+                    <i class="fa fa-info-circle mr-2"></i><strong>重要提示：</strong>本工具计算参数仅供参考，实际拍摄请根据现场光线和设备特性进行调整。
+                </p>
+                <p class="text-sm text-primary mb-2">
+                    <i class="fa fa-camera mr-2"></i>各参数特性说明：
+                </p>
+                <ul class="text-sm text-primary list-disc list-inside space-y-1 pl-2">
+                    <li>快门速度：主要影响<strong>背景光亮度</strong></li>
+                    <li>光圈：同时影响<strong>主体和背景亮度</strong>，并控制景深（光圈越小景深越大）</li>
+                    <li>ISO：同时影响<strong>主体和背景亮度</strong>，但数值越高噪点越多</li>
+                    <li>闪光灯功率：主要影响<strong>主体亮度</strong>，可精确控制闪光输出</li>
+                </ul>
+                <p class="text-sm text-primary mt-3">
+                    <i class="fa fa-lightbulb-o mr-2"></i>可根据以上特性灵活微调参数，获得理想的拍摄效果。点击锁图标可锁定参数。
+                </p>
+            </div>
+            
+            <div class="space-y-6">
+                <!-- 基础参数区域 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 闪光指数 -->
+                    <div class="form-group relative">
+                        <label for="gn" class="block text-sm font-medium text-gray-700 mb-1.5">
+                            闪光指数（GN值）
+                        </label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                <i class="fa fa-lightbulb-o"></i>
+                            </span>
+                            <input 
+                                type="number" 
+                                id="gn" 
+                                min="1" 
+                                max="100" 
+                                step="0.1" 
+                                value="12" 
+                                class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg input-focus"
+                                placeholder="例如：12.5"
+                            >
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">常用范围：10-60，支持一位小数</p>
+                    </div>
+
+                    <!-- 闪光灯功率 -->
+                    <div class="form-group relative">
+                        <label for="power" class="block text-sm font-medium text-gray-700 mb-1.5">
+                            闪光灯灯功率（%）
+                        </label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                <i class="fa fa-tachometer"></i>
+                            </span>
+                            <input 
+                                type="number" 
+                                id="power" 
+                                min="1" 
+                                max="100" 
+                                step="1" 
+                                value="100" 
+                                class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg input-focus"
+                                placeholder="例如：50"
+                            >
+                            <span class="absolute inset-y-0 right-10 flex items-center pr-3 text-gray-500">
+                                %
+                            </span>
+                            <button class="lock-btn unlocked" data-for="power" aria-label="锁定功率">
+                                <i class="fa fa-unlock-alt"></i>
+                            </button>
+                        </div>
+                        <div id="powerWarning" class="text-xs text-warning mt-1 hidden">
+                            <i class="fa fa-exclamation-circle"></i> 功率范围仅限1-100%，已自动修正
+                        </div>
+                    </div>
+
+                    <!-- 拍摄距离 -->
+                    <div class="form-group relative">
+                        <label for="distance" class="block text-sm font-medium text-gray-700 mb-1.5">
+                            拍摄距离（米）
+                        </label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                <i class="fa fa-arrows-h"></i>
+                            </span>
+                            <input 
+                                type="number" 
+                                id="distance" 
+                                min="0.1" 
+                                max="20" 
+                                step="0.1" 
+                                value="2" 
+                                class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg input-focus"
+                                placeholder="例如：3.5"
+                            >
+                            <span class="absolute inset-y-0 right-10 flex items-center pr-3 text-gray-500">
+                                m
+                            </span>
+                            <button class="lock-btn unlocked" data-for="distance" aria-label="锁定距离">
+                                <i class="fa fa-unlock-alt"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">常用范围：0.5-10米，支持一位小数</p>
+                    </div>
+
+                    <!-- ISO值 -->
+                    <div class="form-group relative">
+                        <label for="iso" class="block text-sm font-medium text-gray-700 mb-1.5">
+                            ISO值
+                        </label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                <span class="param-prefix">ISO</span>
+                            </span>
+                            <input 
+                                type="number" 
+                                id="iso" 
+                                min="100" 
+                                max="6400" 
+                                step="100" 
+                                value="100" 
+                                class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg input-focus"
+                                placeholder="例如：400"
+                            >
+                            <button class="lock-btn unlocked" data-for="iso" aria-label="锁定ISO">
+                                <i class="fa fa-unlock-alt"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">建议范围：100-3200，步进100</p>
+                    </div>
+
+                    <!-- 快门速度 -->
+                    <div class="form-group relative">
+                        <label for="shutter" class="block text-sm font-medium text-gray-700 mb-1.5">
+                            快门速度
+                        </label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                <i class="fa fa-clock-o"></i>
+                            </span>
+                            <input 
+                                type="number" 
+                                id="shutter" 
+                                min="1" 
+                                max="30000" 
+                                step="1" 
+                                value="250" 
+                                class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg input-focus"
+                                placeholder="例如：250"
+                            >
+                            <div class="absolute inset-y-0 right-2 flex items-center pr-3">
+                                <!-- 双按钮 Pill 样式切换 -->
+                                <div class="pill-toggle" role="group" aria-label="快门模式选择">
+                                    <button 
+                                        id="shutterFractionBtn" 
+                                        class="pill-button active" 
+                                        aria-pressed="true"
+                                    >
+                                        1/x秒
+                                    </button>
+                                    <button 
+                                        id="shutterSecondBtn" 
+                                        class="pill-button" 
+                                        aria-pressed="false"
+                                    >
+                                        x秒
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="syncWarning" class="text-xs text-danger mt-1 hidden">
+                            <i class="fa fa-exclamation-triangle"></i> 超过多数相机同步速度（1/250s）
+                        </div>
+                        <div id="tripodWarning" class="text-xs text-warning mt-1 hidden">
+                            <i class="fa fa-camera"></i> 建议使用三脚架（慢于1/30s）
+                        </div>
+                        <p class="text-xs text-red-600 mt-1">
+                            <i class="fa fa-info-circle"></i> 快门速度主要控制背景亮度，不影响闪光主体曝光。
+                            提高快门速度会使背景变暗，降低快门速度会使背景变亮。
+                        </p>
+                    </div>
+
+                    <!-- 光圈值 -->
+                    <div class="form-group relative">
+                        <label for="aperture" class="block text-sm font-medium text-gray-700 mb-1.5">
+                            光圈值（f/）
+                        </label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                <i class="fa fa-circle-o"></i>
+                            </span>
+                            <input 
+                                type="number" 
+                                id="aperture" 
+                                min="0.7" 
+                                max="32" 
+                                step="0.1" 
+                                value="2.8" 
+                                class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg input-focus"
+                                placeholder="例如：2.8"
+                            >
+                            <button class="lock-btn unlocked" data-for="aperture" aria-label="锁定光圈">
+                                <i class="fa fa-unlock-alt"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">支持一位小数，常用范围：f/1.8-f/16</p>
+                    </div>
+                </div>
+                
+                <!-- 光圈范围设置 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 最小光圈 -->
+                    <div class="form-group">
+                        <label for="minAperture" class="block text-sm font-medium text-gray-700 mb-1.5">
+                            最小光圈限制（f/）
+                        </label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                <i class="fa fa-compress"></i>
+                            </span>
+                            <input 
+                                type="number" 
+                                id="minAperture" 
+                                min="0.7" 
+                                max="32" 
+                                step="0.1" 
+                                value="1.8" 
+                                class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg input-focus"
+                                placeholder="例如：1.8"
+                            >
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">镜头最大光圈（数值越小光圈越大）</p>
+                    </div>
+                    
+                    <!-- 最大光圈 -->
+                    <div class="form-group">
+                        <label for="maxAperture" class="block text-sm font-medium text-gray-700 mb-1.5">
+                            最大光圈限制（f/）
+                        </label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                <i class="fa fa-expand"></i>
+                            </span>
+                            <input 
+                                type="number" 
+                                id="maxAperture" 
+                                min="0.7" 
+                                max="32" 
+                                step="0.1" 
+                                value="16" 
+                                class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg input-focus"
+                                placeholder="例如：16"
+                            >
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">镜头最小光圈（数值越大光圈越小）</p>
+                    </div>
+                </div>
+                
+                <!-- 重置按钮 -->
+                <button 
+                    id="resetBtn"
+                    class="w-full bg-gray-200 hover:bg-gray-300 text-dark font-medium py-3 px-4 rounded-lg transition-all-300 flex items-center justify-center gap-2 btn-hover-effect"
+                >
+                    <i class="fa fa-refresh"></i>
+                    <span>重置所有参数</span>
+                </button>
+                
+                <!-- 结果显示区域 -->
+                <div class="result bg-neutral rounded-xl p-6 text-center transition-all-300 hover:shadow-md">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Apollo 曝光状态</h2>
+                    <div id="exposureStatus" class="text-[clamp(1.5rem,4vw,2.5rem)] font-bold text-success">
+                        曝光平衡
+                    </div>
+                    
+                    <!-- 当前关键参数总结 -->
+                    <div class="flex flex-wrap justify-center gap-3 my-4">
+                        <div class="param-pill">
+                            <i class="fa fa-circle-o text-primary"></i>
+                            <span><strong>光圈：</strong><span id="currentApertureDisplay">f/2.8</span></span>
+                        </div>
+                        <div class="param-pill">
+                            <i class="fa fa-clock-o text-primary"></i>
+                            <span><strong>快门：</strong><span id="currentShutterDisplay">1/250s</span></span>
+                        </div>
+                        <div class="param-pill">
+                            <span class="param-prefix text-primary">ISO</span>
+                            <span><strong>：</strong><span id="currentIsoDisplay">100</span></span>
+                        </div>
+                        <div class="param-pill">
+                            <i class="fa fa-arrows-h text-primary"></i>
+                            <span><strong>距离：</strong><span id="currentDistanceDisplay">2.0米</span></span>
+                        </div>
+                        <div class="param-pill">
+                            <i class="fa fa-tachometer text-primary"></i>
+                            <span><strong>功率：</strong><span id="currentPowerDisplay">100%</span></span>
+                        </div>
+                    </div>
+                    
+                    <div id="exposureDetails" class="text-sm text-gray-600 mt-2">
+                        所有参数已优化至平衡状态
+                    </div>
+                </div>
+                
+                <!-- 参数说明区域 -->
+                <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                    <h3 class="font-medium text-primary mb-2 flex items-center">
+                        <i class="fa fa-info-circle mr-2"></i>Apollo 动态调整说明
+                    </h3>
+                    <p class="text-sm text-gray-600">
+                        本计算器基于闪光灯曝光公式实时计算：<br>
+                        光圈 = 最大GN值 × √(当前功率%/100) ÷ (距离 × √(ISO/100))
+                        <br><br>
+                        <strong>光圈限制逻辑：</strong>当计算结果超出设置的最大/最小光圈范围时，光圈将被限制在边界值，
+                        并自动调整其他未锁定参数以保持曝光平衡。
+                    </p>
+                </div>
+                
+                <!-- 参数参考范围汇总 -->
+                <div class="param-range-section">
+                    <h3 class="font-medium text-primary mb-4 flex items-center">
+                        <i class="fa fa-book mr-2"></i>Apollo 参数参考范围汇总
+                    </h3>
+                    <table class="range-table">
+                        <thead>
+                            <tr>
+                                <th>参数类型</th>
+                                <th>应用场景</th>
+                                <th>推荐范围</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td rowspan="3">闪光指数</td>
+                                <td>小型闪光灯</td>
+                                <td>10-30</td>
+                            </tr>
+                            <tr>
+                                <td>中型闪光灯</td>
+                                <td>30-50</td>
+                            </tr>
+                            <tr>
+                                <td>大型影室灯</td>
+                                <td>50-100</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="3">闪光灯功率</td>
+                                <td>近距离补光</td>
+                                <td>1-25%</td>
+                            </tr>
+                            <tr>
+                                <td>常规拍摄</td>
+                                <td>25-75%</td>
+                            </tr>
+                            <tr>
+                                <td>远距离/强光</td>
+                                <td>75-100%</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="3">拍摄距离</td>
+                                <td>微距/特写</td>
+                                <td>0.5-1.5m</td>
+                            </tr>
+                            <tr>
+                                <td>人像/产品</td>
+                                <td>1.5-5m</td>
+                            </tr>
+                            <tr>
+                                <td>群体/环境</td>
+                                <td>5-10m</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="3">ISO值</td>
+                                <td>低噪点/静态</td>
+                                <td>100-400</td>
+                            </tr>
+                            <tr>
+                                <td>常规拍摄</td>
+                                <td>400-800</td>
+                            </tr>
+                            <tr>
+                                <td>低光/动态</td>
+                                <td>800-3200</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="3">快门速度</td>
+                                <td>高速同步</td>
+                                <td>1/1000s以上</td>
+                            </tr>
+                            <tr>
+                                <td>常规同步</td>
+                                <td>1/125-1/250s</td>
+                            </tr>
+                            <tr>
+                                <td>慢速同步</td>
+                                <td>1/60s以下</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="3">光圈值</td>
+                                <td>浅景深/弱光</td>
+                                <td>f/1.8-f/4</td>
+                            </tr>
+                            <tr>
+                                <td>常规拍摄</td>
+                                <td>f/4-f/8</td>
+                            </tr>
+                            <tr>
+                                <td>大景深/强光</td>
+                                <td>f/8-f/16</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let lastUpdatedParam = null;
+        let isTyping = false;
+        let calculationDebounceTimer = null;
+        let shutterMode = 'fraction'; // 'fraction' 表示1/x秒，'second'表示x秒
+        const defaultShutterSync = 250; // 默认同步速度1/250s
+        
+        // 锁定状态管理
+        const lockStates = {
+            // 临时锁定：用户刚修改的参数
+            tempLocked: null,
+            // 手动锁定：用户点击锁定按钮的参数
+            manualLocked: {}
+        };
+        
+        // 初始化默认值存储
+        const defaultValues = {};
+        
+        // DOM元素加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取所有输入框元素
+            const inputIds = [
+                'gn', 'power', 'distance', 'iso', 'shutter', 
+                'aperture', 'minAperture', 'maxAperture'
+            ];
+            const inputs = inputIds.map(id => document.getElementById(id));
+            
+            // 存储初始默认值
+            inputs.forEach(input => {
+                if (input) {
+                    defaultValues[input.id] = input.value;
+                }
+            });
+            
+            // 为光圈范围限制添加事件监听
+            document.getElementById('minAperture').addEventListener('input', function() {
+                // 确保最小光圈不大于最大光圈
+                const min = parseFloat(this.value) || 0;
+                const maxInput = document.getElementById('maxAperture');
+                const max = parseFloat(maxInput.value) || 0;
+                
+                if (min > max) {
+                    maxInput.value = min;
+                }
+                calculateExposure();
+            });
+            
+            document.getElementById('maxAperture').addEventListener('input', function() {
+                // 确保最大光圈不小于最小光圈
+                const max = parseFloat(this.value) || 0;
+                const minInput = document.getElementById('minAperture');
+                const min = parseFloat(minInput.value) || 0;
+                
+                if (max < min) {
+                    minInput.value = max;
+                }
+                calculateExposure();
+            });
+            
+            // 为所有输入框添加事件监听
+            inputs.forEach(input => {
+                if (input && !['minAperture', 'maxAperture'].includes(input.id)) {
+                    // 输入事件
+                    input.addEventListener('input', handleInputChange);
+                    
+                    // 失去焦点事件
+                    input.addEventListener('blur', function() {
+                        handleInputBlur(this);
+                    });
+                    
+                    // 键盘事件
+                    input.addEventListener('keydown', function(e) {
+                        handleKeyDown(this, e);
+                    });
+                    
+                    input.addEventListener('keyup', function() {
+                        // 标记输入状态结束
+                        setTimeout(() => {
+                            isTyping = false;
+                        }, 500);
+                    });
+                }
+            });
+            
+            // 快门模式切换按钮
+            document.getElementById('shutterFractionBtn').addEventListener('click', function() {
+                setShutterMode('fraction');
+            });
+            document.getElementById('shutterSecondBtn').addEventListener('click', function() {
+                setShutterMode('second');
+            });
+            
+            // 重置按钮事件
+            document.getElementById('resetBtn').addEventListener('click', resetAllParameters);
+            
+            // 锁定按钮事件
+            document.querySelectorAll('.lock-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const param = this.getAttribute('data-for');
+                    toggleManualLock(param);
+                });
+            });
+            
+            // 初始计算
+            calculateExposure();
+            // 初始更新显示时传入默认的曝光状态对象
+            updateDisplay({balanced: true, reason: '', apertureLimited: false});
+        });
+        
+        // 切换手动锁定状态
+        function toggleManualLock(param) {
+            // 切换锁定状态
+            lockStates.manualLocked[param] = !lockStates.manualLocked[param];
+            
+            // 更新UI
+            const lockBtn = document.querySelector(`.lock-btn[data-for="${param}"]`);
+            if (lockStates.manualLocked[param]) {
+                lockBtn.classList.remove('unlocked', 'temp-locked');
+                lockBtn.classList.add('locked');
+                lockBtn.innerHTML = '<i class="fa fa-lock"></i>';
+            } else {
+                lockBtn.classList.remove('locked', 'temp-locked');
+                lockBtn.classList.add('unlocked');
+                lockBtn.innerHTML = '<i class="fa fa-unlock-alt"></i>';
+            }
+            
+            // 重新计算曝光
+            calculateExposure();
+        }
+        
+        // 设置临时锁定
+        function setTempLock(param) {
+            // 清除之前的临时锁定
+            if (lockStates.tempLocked) {
+                const prevLockBtn = document.querySelector(`.lock-btn[data-for="${lockStates.tempLocked}"]`);
+                if (prevLockBtn && !lockStates.manualLocked[lockStates.tempLocked]) {
+                    prevLockBtn.classList.remove('temp-locked');
+                    prevLockBtn.classList.add('unlocked');
+                    prevLockBtn.innerHTML = '<i class="fa fa-unlock-alt"></i>';
+                }
+            }
+            
+            // 设置新的临时锁定
+            lockStates.tempLocked = param;
+            const lockBtn = document.querySelector(`.lock-btn[data-for="${param}"]`);
+            if (lockBtn && !lockStates.manualLocked[param]) {
+                lockBtn.classList.remove('unlocked', 'locked');
+                lockBtn.classList.add('temp-locked');
+                lockBtn.innerHTML = '<i class="fa fa-lock"></i>';
+            }
+        }
+        
+        // 检查参数是否被锁定
+        function isLocked(param) {
+            return lockStates.manualLocked[param] || lockStates.tempLocked === param;
+        }
+        
+        // 处理输入框变化
+        function handleInputChange(e) {
+            const input = e.target;
+            const param = input.id;
+            
+            // 不处理GN值、光圈限制和快门速度的锁定逻辑
+            if (!['gn', 'minAperture', 'maxAperture', 'shutter'].includes(param)) {
+                // 设置临时锁定
+                setTempLock(param);
+            }
+            
+            isTyping = true;
+            
+            // 移除所有输入框的高亮状态
+            document.querySelectorAll('input').forEach(el => {
+                el.classList.remove('recently-updated');
+            });
+            
+            // 为当前修改的输入框添加高亮
+            input.classList.add('recently-updated');
+            lastUpdatedParam = param;
+            
+            // 防抖处理计算
+            clearTimeout(calculationDebounceTimer);
+            calculationDebounceTimer = setTimeout(() => {
+                if (param !== 'shutter') {
+                    // 快门速度变化时不触发曝光计算，只更新警告
+                    calculateExposure(param);
+                } else {
+                    // 只更新警告信息
+                    updateWarnings(param);
+                }
+                isTyping = false;
+            }, 200);
+        }
+        
+        // 处理输入框失去焦点
+        function handleInputBlur(input) {
+            // 检查空值并填充默认值
+            if (input.value.trim() === '') {
+                input.value = defaultValues[input.id];
+                calculateExposure(input.id);
+            }
+            
+            // 移除高亮状态
+            setTimeout(() => {
+                input.classList.remove('recently-updated');
+            }, 1000);
+        }
+        
+        // 处理键盘事件
+        function handleKeyDown(input, e) {
+            // 处理删除/退格键
+            if ((e.key === 'Delete' || e.key === 'Backspace') && input.value.trim() === '') {
+                e.preventDefault();
+                input.value = defaultValues[input.id];
+                calculateExposure(input.id);
+            }
+            
+            // 标记为输入状态
+            isTyping = true;
+        }
+        
+        // 设置快门模式
+        function setShutterMode(mode) {
+            shutterMode = mode;
+            
+            // 更新按钮状态
+            document.getElementById('shutterFractionBtn').classList.toggle('active', mode === 'fraction');
+            document.getElementById('shutterSecondBtn').classList.toggle('active', mode === 'second');
+            
+            // 更新警告信息
+            updateWarnings();
+            // 仍然需要触发曝光计算以确保exposureStatus存在，同时保持快门的独立性
+            calculateExposure('shutter');
+        }
+        
+        // 计算曝光参数
+        function calculateExposure(changedParam) {
+            // 获取当前参数值
+            const gn = parseFloat(document.getElementById('gn').value) || 0; // GN值表示闪光灯的最大闪光指数
+            let power = parseFloat(document.getElementById('power').value) || 0; // 功率表示当前设置的闪光灯功率百分比
+            let distance = parseFloat(document.getElementById('distance').value) || 0;
+            let iso = parseFloat(document.getElementById('iso').value) || 0;
+            let shutter = parseFloat(document.getElementById('shutter').value) || 0;
+            let aperture = parseFloat(document.getElementById('aperture').value) || 0;
+            const minAperture = parseFloat(document.getElementById('minAperture').value) || 0;
+            const maxAperture = parseFloat(document.getElementById('maxAperture').value) || 0;
+            
+            // 确保功率在有效范围
+            if (power < 1 || power > 100) {
+                power = Math.max(1, Math.min(100, power));
+                document.getElementById('power').value = power;
+                document.getElementById('powerWarning').classList.remove('hidden');
+            } else {
+                document.getElementById('powerWarning').classList.add('hidden');
+            }
+            
+            // 计算功率系数 (百分比转系数并开平方)
+            const powerFactor = Math.sqrt(power / 100);
+            
+            // 计算ISO系数 (相对于ISO 100)
+            const isoFactor = Math.sqrt(iso / 100);
+            
+            // 曝光状态变量
+            let exposureStatus = {
+                balanced: true,
+                reason: '',
+                apertureLimited: false,
+                overExposed: false,
+                underExposed: false,
+                highIsoWarning: false // 添加ISO噪点警告标志
+            };
+            
+            // 当修改新参数时，如果之前有临时锁定且与当前修改的参数不同，则清除临时锁定
+            if (changedParam && lockStates.tempLocked && changedParam !== lockStates.tempLocked && changedParam !== 'shutter') {
+                const prevLockBtn = document.querySelector(`.lock-btn[data-for="${lockStates.tempLocked}"]`);
+                if (prevLockBtn && !lockStates.manualLocked[lockStates.tempLocked]) {
+                    prevLockBtn.classList.remove('temp-locked');
+                    prevLockBtn.classList.add('unlocked');
+                    prevLockBtn.innerHTML = '<i class="fa fa-unlock-alt"></i>';
+                }
+                lockStates.tempLocked = null;
+            }
+            
+            // 确定需要计算的参数（未被锁定的参数）
+            const unlockedParams = ['power', 'distance', 'iso', 'aperture'].filter(
+                param => !isLocked(param)
+            );
+            
+            // 如果修改的参数是锁定的，或者没有指定修改的参数，需要找到一个未锁定的参数进行计算
+            let paramToCalculate = changedParam && !isLocked(changedParam) && changedParam !== 'shutter' ? changedParam : null;
+            
+            // 如果有未锁定的参数
+            if (unlockedParams.length > 0) {
+                // 如果没有指定要计算的参数，使用优先级算法选择最优参数
+                if (!paramToCalculate) {
+                    // 主要参数优先级顺序：光圈 > 功率 > ISO > 距离
+                    // 光圈控制虚化和主体亮度
+                    // 功率控制闪光输出（影响回电时间）
+                    // ISO控制整体亮度但会增加噪点
+                    // 距离影响构图
+                    const priorityOrder = ['aperture', 'power', 'iso', 'distance'];
+                    for (const param of priorityOrder) {
+                        if (unlockedParams.includes(param)) {
+                            paramToCalculate = param;
+                            break;
+                        }
+                    }
+                }
+                
+                // 基础计算逻辑
+                if (gn > 0 && distance > 0 && aperture > 0 && power > 0 && iso > 0) {
+                    // 根据需要计算的参数进行计算
+                    switch (paramToCalculate) {
+                        case 'aperture':
+                            // 计算理想光圈值
+                            // 光圈 = 最大GN值 × √(当前功率%/100) ÷ (距离 × √(ISO/100))
+                            const idealAperture = (gn * powerFactor) / (distance * isoFactor);
+                            
+                            // 使用标准光圈值，避免显示过多小数位
+                            const standardApertures = [0.7, 1.0, 1.4, 2.0, 2.8, 4.0, 5.6, 8.0, 11, 16, 22, 32];
+                            
+                            // 找到最接近理想值的标准光圈
+                            aperture = standardApertures.reduce((prev, curr) => {
+                                return Math.abs(curr - idealAperture) < Math.abs(prev - idealAperture) ? curr : prev;
+                            });
+                            
+                            // 检查光圈是否在限制范围内
+                            if (aperture < minAperture) {
+                                aperture = minAperture;
+                                exposureStatus.apertureLimited = true;
+                            } else if (aperture > maxAperture) {
+                                aperture = maxAperture;
+                                exposureStatus.apertureLimited = true;
+                            }
+                            
+                            document.getElementById('aperture').value = aperture;
+                            
+                            // 如果光圈被限制，尝试调整其他未锁定参数
+                            if (exposureStatus.apertureLimited && unlockedParams.length > 1) {
+                                // 解除光圈的临时锁定（如果有），以便计算其他参数
+                                const wasTempLocked = lockStates.tempLocked === 'aperture';
+                                if (wasTempLocked) {
+                                    lockStates.tempLocked = null;
+                                }
+                                
+                                // 重新计算，尝试调整其他参数
+                                recalculateOtherParams(gn, aperture, minAperture, maxAperture, unlockedParams, exposureStatus);
+                            }
+                            break;
+                            
+                        case 'power':
+                            // 计算闪光灯功率百分比
+                            // 修正公式：功率 = [ (aperture * distance) / (gn_max * sqrt(iso/100)) ]² * 100
+                            const power_ratio = (aperture * distance) / (gn * (Math.sqrt(iso) / 10));
+                            const powerVal = Math.pow(power_ratio, 2) * 100;
+                            // 避免功率值过小导致计算误差，增加最小功率保障
+                            power = Math.max(1, Math.min(100, Math.round(powerVal)));
+                            document.getElementById('power').value = power;
+                            break;
+                            
+                        case 'distance':
+                            // 计算拍摄距离
+                            // 距离 = 最大GN值 × √(当前功率%/100) ÷ (光圈 × √(ISO/100))
+                            distance = (gn * powerFactor) / (aperture * isoFactor);
+                            distance = parseFloat(distance.toFixed(1));
+                            distance = Math.max(0.1, Math.min(20, distance));
+                            document.getElementById('distance').value = distance;
+                            break;
+                            
+                        case 'iso':
+                            // 计算ISO值
+                            // ISO = 100 × (最大GN值 × √(当前功率%/100) ÷ (光圈 × 距离))²
+                            const isoVal = 100 * Math.pow((gn * powerFactor) / (aperture * distance), 2);
+                            // 支持常见的ISO步进值
+                            const standardIsoValues = [100, 125, 160, 200, 250, 320, 400, 500, 640, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400];
+                            // 找到最接近计算值的标准ISO值
+                            iso = standardIsoValues.reduce((prev, curr) => {
+                                return Math.abs(curr - isoVal) < Math.abs(prev - isoVal) ? curr : prev;
+                            });
+                            iso = Math.max(100, Math.min(6400, iso));
+                            document.getElementById('iso').value = iso;
+                            break;
+                    }
+                } else {
+                    // 必要参数不足，无法计算
+                    exposureStatus.balanced = false;
+                    exposureStatus.reason = '必要参数不足，无法计算曝光平衡';
+                }
+            } else {
+                // 所有参数都被锁定，检查当前曝光是否平衡
+                if (gn > 0 && distance > 0 && aperture > 0 && power > 0 && iso > 0) {
+                    const calculatedAperture = (gn * powerFactor) / (distance * isoFactor);
+                    const apertureDiff = Math.abs(calculatedAperture - aperture);
+                    
+                    // 如果光圈差异超过0.5，则认为曝光不平衡
+                    if (apertureDiff > 0.5) {
+                        exposureStatus.balanced = false;
+                        exposureStatus.reason = '所有参数都被锁定，当前设置无法保持曝光平衡';
+                    }
+                } else {
+                    exposureStatus.balanced = false;
+                    exposureStatus.reason = '参数值无效，无法评估曝光平衡';
+                }
+            }
+            
+            // 计算理论光圈值以判断曝光是否平衡
+            if (gn > 0 && distance > 0 && power > 0 && iso > 0) {
+                // 计算理论光圈值
+                // 光圈 f = GN / ( d * sqrt(ISO / 100) * sqrt(P/100) )
+                const theoreticalAperture = (gn * Math.sqrt(power / 100)) / (distance * Math.sqrt(iso / 100));
+                // 计算实际光圈与理论光圈的比例
+                const apertureRatio = aperture / theoreticalAperture;
+                
+                // 判断曝光状态
+                if (apertureRatio < 0.8) {
+                    // 实际光圈小于理论光圈的80%，表示欠曝光
+                    exposureStatus.balanced = false;
+                    exposureStatus.underExposed = true;
+                    exposureStatus.reason = '当前设置导致欠曝光，建议增加闪光灯功率、减小光圈或靠近拍摄对象';
+                } else if (apertureRatio > 1.2) {
+                    // 实际光圈大于理论光圈的120%，表示过曝光
+                    exposureStatus.balanced = false;
+                    exposureStatus.overExposed = true;
+                    exposureStatus.reason = '当前设置导致过曝光，建议减小闪光灯功率、增大光圈或远离拍摄对象';
+                } else {
+                    // 在可接受范围内，标记为平衡
+                    exposureStatus.balanced = true;
+                    exposureStatus.underExposed = false;
+                    exposureStatus.overExposed = false;
+                }
+            } else {
+                exposureStatus.balanced = false;
+                exposureStatus.reason = '必要参数不足或无效，无法计算正常曝光';
+            }
+            
+
+            
+            // 更新显示
+            updateDisplay(exposureStatus);
+        }
+        
+        // 当光圈受限时，重新计算其他参数以尝试保持曝光平衡
+        function recalculateOtherParams(gn, aperture, minAperture, maxAperture, unlockedParams, exposureStatus) {
+            // 重新获取最新的参数值
+            let power = parseFloat(document.getElementById('power').value) || 0; // 当前设置的闪光灯功率百分比
+            let distance = parseFloat(document.getElementById('distance').value) || 0;
+            let iso = parseFloat(document.getElementById('iso').value) || 0;
+            
+            // 计算功率系数 (百分比转系数并开平方)
+            const powerFactor = Math.sqrt(power / 100);
+            
+            // 计算ISO系数 (相对于ISO 100)
+            const isoFactor = Math.sqrt(iso / 100);
+            
+            // 定义参数调整顺序（优先级从高到低，根据摄影实践）
+            const adjustmentOrder = [
+                { param: 'power', priority: 1 },
+                { param: 'iso', priority: 2 },
+                { param: 'distance', priority: 3 }
+            ];
+            
+            // 筛选出未锁定的参数并按优先级排序
+            const availableParams = adjustmentOrder
+                .filter(item => unlockedParams.includes(item.param) && item.param !== 'aperture')
+                .sort((a, b) => a.priority - b.priority);
+            
+            // 尝试调整每个参数
+            let adjusted = false;
+            for (const item of availableParams) {
+                const param = item.param;
+                
+                // 检查是否有足够的参数进行计算
+                if (gn > 0 && distance > 0 && aperture > 0 && power > 0 && iso > 0) {
+                    switch (param) {
+                        case 'power':
+                            // 计算公式：功率 = 100 × (光圈 × 距离 × √(ISO/100) ÷ 最大GN值)²
+                            const powerVal = Math.pow((aperture * distance * isoFactor) / gn, 2) * 100;
+                            const newPower = Math.max(1, Math.min(100, Math.round(powerVal)));
+                            if (newPower !== power) {
+                                document.getElementById('power').value = newPower;
+                                adjusted = true;
+                            }
+                            break;
+                            
+                        case 'distance':
+                            // 计算公式：距离 = 最大GN值 × √(当前功率%/100) ÷ (光圈 × √(ISO/100))
+                            const newDistance = (gn * powerFactor) / (aperture * isoFactor);
+                            const clampedDistance = Math.max(0.1, Math.min(20, parseFloat(newDistance.toFixed(1))));
+                            if (clampedDistance !== distance) {
+                                document.getElementById('distance').value = clampedDistance;
+                                adjusted = true;
+                            }
+                            break;
+                            
+                        case 'iso':
+                            // 计算公式：ISO = 100 × (最大GN值 × √(当前功率%/100) ÷ (光圈 × 距离))²
+                            const isoVal = 100 * Math.pow((gn * powerFactor) / (aperture * distance), 2);
+                            // 支持常见的ISO步进值
+                            const standardIsoValues = [100, 125, 160, 200, 250, 320, 400, 500, 640, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400];
+                            // 找到最接近计算值的标准ISO值
+                            const newIso = standardIsoValues.reduce((prev, curr) => {
+                                return Math.abs(curr - isoVal) < Math.abs(prev - isoVal) ? curr : prev;
+                            });
+                            if (newIso !== iso && newIso >= 100 && newIso <= 6400) {
+                                document.getElementById('iso').value = newIso;
+                                adjusted = true;
+                            }
+                    }
+                }
+                
+                // 如果已经调整了一个参数，就退出循环
+                if (adjusted) {
+                    break;
+                }
+            }
+            
+            // 即使无法通过调整单个参数完全平衡曝光，也尝试调整多个参数组合
+            if (!adjusted && availableParams.length > 1) {
+                // 尝试调整多种参数组合
+                const combinations = [
+                    ['power', 'distance'],
+                    ['power', 'iso'],
+                    ['distance', 'iso']
+                ];
+                
+                let bestBalance = Infinity;
+                let bestParams = null;
+                
+                // 评估每种组合
+                combinations.forEach(combination => {
+                    if (combination.every(p => availableParams.some(a => a.param === p))) {
+                        // 为每种组合计算理论上的最佳参数
+                        const tempPower = combination.includes('power') ? Math.pow((aperture * distance * isoFactor) / gn, 2) * 100 : power;
+                        const tempDistance = combination.includes('distance') ? (gn * Math.sqrt(tempPower / 100)) / (aperture * isoFactor) : distance;
+                        const tempIso = combination.includes('iso') ? 100 * Math.pow((gn * Math.sqrt(tempPower / 100)) / (aperture * tempDistance), 2) : iso;
+                        
+                        // 计算理论上的平衡程度
+                        const balanceError = Math.abs(1 - ((gn * Math.sqrt(tempPower / 100) * isoFactor) / (aperture * tempDistance)));
+                        
+                        if (balanceError < bestBalance) {
+                            bestBalance = balanceError;
+                            bestParams = {
+                                power: tempPower,
+                                distance: tempDistance,
+                                iso: tempIso
+                            };
+                        }
+                    }
+                });
+                
+                // 如果找到较好的参数组合，应用它
+                if (bestParams && bestBalance < 0.5) { // 50%误差范围内
+                    combinations.forEach(combination => {
+                        if (combination.every(p => availableParams.some(a => a.param === p))) {
+                            if (combination.includes('power')) {
+                                const newPower = Math.max(1, Math.min(100, Math.round(bestParams.power)));
+                                document.getElementById('power').value = newPower;
+                            }
+                            if (combination.includes('distance')) {
+                                const newDistance = Math.max(0.1, Math.min(20, parseFloat(bestParams.distance.toFixed(1))));
+                                document.getElementById('distance').value = newDistance;
+                            }
+                            if (combination.includes('iso')) {
+                                // 支持常见的ISO步进值
+                                const standardIsoValues = [100, 125, 160, 200, 250, 320, 400, 500, 640, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400];
+                                // 找到最接近计算值的标准ISO值
+                                const newIso = standardIsoValues.reduce((prev, curr) => {
+                                    return Math.abs(curr - bestParams.iso) < Math.abs(prev - bestParams.iso) ? curr : prev;
+                                });
+                                document.getElementById('iso').value = newIso;
+                            }
+                            adjusted = true;
+                        }
+                    });
+                    
+                    exposureStatus.balanced = true;
+                    exposureStatus.reason = '已通过组合调整参数，尽量平衡曝光';
+                } else {
+                    // 标记为无法完全平衡
+                    exposureStatus.balanced = false;
+                    exposureStatus.reason = '已尽量优化参数，但受限于锁定设置和范围限制，无法完全平衡曝光';
+                }
+            }
+        }
+        
+        // 更新警告信息
+        function updateWarnings(changedParam) {
+            // 获取当前参数值
+            const shutter = parseFloat(document.getElementById('shutter').value) || 0;
+            const iso = parseFloat(document.getElementById('iso').value) || 0;
+            
+            // 快门同步警告
+            const syncWarning = document.getElementById('syncWarning');
+            if (shutterMode === 'fraction' && shutter > defaultShutterSync) {
+                syncWarning.classList.remove('hidden');
+            } else {
+                syncWarning.classList.add('hidden');
+            }
+            
+            // 三脚架建议
+            const tripodWarning = document.getElementById('tripodWarning');
+            if ((shutterMode === 'fraction' && shutter < 30) || 
+                (shutterMode === 'second' && shutter > 1)) {
+                tripodWarning.classList.remove('hidden');
+            } else {
+                tripodWarning.classList.add('hidden');
+            }
+            
+            // 添加高ISO噪点警告（基于摄影专业建议：ISO会增加噪点）
+            const isoWarning = document.getElementById('isoWarning');
+            if (!isoWarning) {
+                // 如果警告元素不存在，创建它
+                const warningContainer = document.getElementById('warnings') || document.createElement('div');
+                if (!warningContainer.id) {
+                    warningContainer.id = 'warnings';
+                    warningContainer.className = 'warnings-container mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg';
+                    const mainContainer = document.querySelector('.calculator-container') || document.body;
+                    mainContainer.appendChild(warningContainer);
+                }
+                
+                const newIsoWarning = document.createElement('div');
+                newIsoWarning.id = 'isoWarning';
+                newIsoWarning.className = 'hidden mb-2 p-2 bg-amber-100 border-l-4 border-amber-500 rounded';
+                newIsoWarning.innerHTML = '<i class="fa fa-exclamation-triangle text-amber-500 mr-2"></i><span>高ISO警告：当前ISO设置可能导致明显噪点，建议减小ISO并通过增加光圈或闪光灯功率来补偿曝光</span>';
+                warningContainer.appendChild(newIsoWarning);
+            } else {
+                // 如果元素存在，控制显示状态
+                if (iso > 800) {
+                    isoWarning.classList.remove('hidden');
+                } else {
+                    isoWarning.classList.add('hidden');
+                }
+            }
+        }
+        
+        // 更新显示信息
+        function updateDisplay(exposureStatus) {
+            // 彻底清理所有输入框的高亮状态
+            document.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => {
+                input.classList.remove('recently-updated', 'status-border-success', 'status-border-warning', 'status-border-danger', 'bg-yellow-100', 'ring-2', 'ring-yellow-500', 'bg-red-100', 'ring-red-500', 'bg-green-100', 'ring-green-500');
+            });
+
+            // 更新参数显示
+            document.getElementById('currentApertureDisplay').textContent = `f/${document.getElementById('aperture').value}`;
+
+            const shutter = document.getElementById('shutter').value;
+            document.getElementById('currentShutterDisplay').textContent = 
+                shutterMode === 'fraction' ? `1/${shutter}s` : `${shutter}s`;
+                
+            document.getElementById('currentIsoDisplay').textContent = document.getElementById('iso').value;
+            document.getElementById('currentDistanceDisplay').textContent = `${document.getElementById('distance').value}米`;
+
+            // 显示功率百分比
+            const powerValue = document.getElementById('power').value;
+            document.getElementById('currentPowerDisplay').textContent = `${powerValue}%`;
+
+            // 更新曝光状态文本
+            const statusElement = document.getElementById('exposureStatus');
+            const detailsElement = document.getElementById('exposureDetails');
+            
+            statusElement.textContent = '曝光正常';
+            statusElement.className = 'text-[clamp(1.5rem,4vw,2.5rem)] font-bold text-green-600';
+            detailsElement.textContent = '当前参数组合能够获得理想曝光';
+            detailsElement.className = 'text-green-700 mt-2';
+        }
+        
+        // 重置所有参数
+        function resetAllParameters() {
+            // 重置所有输入框到默认值
+            Object.keys(defaultValues).forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.value = defaultValues[id];
+                    // 彻底清理所有高亮状态
+                    input.classList.remove('recently-updated', 'status-border-success', 'status-border-warning', 'status-border-danger', 'bg-yellow-100', 'ring-2', 'ring-yellow-500', 'bg-red-100', 'ring-red-500', 'bg-green-100', 'ring-green-500');
+                }
+            });
+            
+            // 重置锁定状态
+            lockStates.tempLocked = null;
+            lockStates.manualLocked = {};
+            
+            // 重置锁定按钮UI
+            document.querySelectorAll('.lock-btn').forEach(btn => {
+                btn.classList.remove('locked', 'temp-locked');
+                btn.classList.add('unlocked');
+                btn.innerHTML = '<i class="fa fa-unlock-alt"></i>';
+            });
+            
+            // 重置快门模式
+            setShutterMode('fraction');
+            
+            // 重置警告
+            document.getElementById('powerWarning').classList.add('hidden');
+            document.getElementById('syncWarning').classList.add('hidden');
+            document.getElementById('tripodWarning').classList.add('hidden');
+            
+            // 重新计算
+            lastUpdatedParam = null;
+            calculateExposure();
+        }
+    </script>
+        <footer class="text-center text-gray-500 text-sm mt-6 mb-12"> 
+             <p>Apollo 闪光灯曝光计算器 | 摄影辅助工具</p> 
+         </footer>
+</body>
+</html>
+
+
+
+

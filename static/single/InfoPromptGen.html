@@ -1,0 +1,968 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI个性化信息识别提示词生成器</title>
+    <link rel="icon" type="image/ico" href="https://cdn.jsdelivr.net/npm/picture-sianx@1.1.2/img/6945257127.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .container:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 32px;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .section {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .section h2 {
+            font-size: 20px;
+            color: #2d3748;
+            margin-bottom: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section h2::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 2px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+        .form-group:focus-within label {
+            color: #4f46e5;
+        }
+        .form-group input[type="text"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            background: #ffffff;
+            color: #2d3748;
+            font-family: inherit;
+        }
+        .form-group input[type="text"]:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            background: #fafafa;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+            line-height: 1.6;
+        }
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .checkbox-item:hover {
+            background: #f1f5f9;
+            transform: translateX(2px);
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #4f46e5;
+            cursor: pointer;
+        }
+        .checkbox-item label {
+            margin: 0;
+            font-weight: 500;
+            color: #475569;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .button-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+        #generateBtn {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+        #generateBtn:hover {
+            background: linear-gradient(135deg, #4338ca, #6d28d9);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+            transform: translateY(-1px);
+        }
+        #resetBtn {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1.5px solid #e2e8f0;
+        }
+        #resetBtn:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+        #copyBtn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        #copyBtn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            transform: translateY(-1px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .result-section {
+            margin-top: 40px;
+            padding: 28px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        .result-section h2 {
+            font-size: 20px;
+            color: #2d3748;
+            margin-bottom: 16px;
+            border: none;
+            padding: 0;
+        }
+        #result {
+            width: 100%;
+            min-height: 220px;
+            padding: 20px;
+            background: white;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: 'Courier New', Courier, 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            color: #2d3748;
+        }
+        .result-section:focus-within {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        .success-message {
+            color: #10b981;
+            text-align: center;
+            margin-top: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(-5px);
+        }
+        .success-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .info-box {
+            background: #eff6ff;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            border: 1px solid #dbeafe;
+        }
+        .info-box p {
+            color: #1e40af;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0;
+        }
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px;
+                margin: 10px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .section h2 {
+                font-size: 18px;
+            }
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>个性化信息识别提示词生成器</h1>
+        
+        <div class="info-box">
+            <p>使用说明：配置以下参数，生成个性化的信息识别提示词。可用于图片OCR或连续文本的信息提取，生成标准JSON格式输出。</p>
+        </div>
+        
+        <div class="section">
+            <h2>1. 基础配置</h2>
+            <div class="form-group">
+                <label for="targetType">目标信息类型</label>
+                <select id="targetType">
+                    <option value="通用">通用</option>
+                    <option value="餐饮">餐饮</option>
+                    <option value="快递">快递</option>
+                    <option value="出行">出行</option>
+                    <option value="订单">订单</option>
+                    <option value="医疗">医疗</option>
+                    <option value="金融">金融</option>
+                    <option value="教育">教育</option>
+                    <option value="电商">电商</option>
+                    <option value="物流">物流</option>
+                    <option value="零售">零售</option>
+                    <option value="制造业">制造业</option>
+                    <option value="房地产">房地产</option>
+                    <option value="政务">政务</option>
+                    <option value="媒体">媒体</option>
+                    <option value="科技">科技</option>
+                    <option value="旅游">旅游</option>
+                    <option value="娱乐">娱乐</option>
+                    <option value="体育">体育</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="inputSource">输入来源</label>
+                <select id="inputSource">
+                    <option value="图片和文本">图片和文本</option>
+                    <option value="仅图片">仅图片</option>
+                    <option value="仅文本">仅文本</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>2. 字段配置（可选）</h2>
+            <div class="info-box">
+                <p>点击"添加字段"按钮，可视化配置字段。保持为空则使用默认配置。</p>
+            </div>
+            
+            <div class="field-config-section">
+                <h3>必需字段 <span style="font-size: 12px; color: #999;">(一定会出现的内容）</span></h3>
+                <div id="requiredFieldsContainer">
+                    <div class="field-item">
+                        <input type="text" class="field-key" placeholder="字段名（如title）" value="title">
+                        <input type="text" class="field-value" placeholder="字段描述（如品牌名）" value="品牌名">
+                        <button type="button" class="remove-field-btn" onclick="removeField(this)">删除</button>
+                    </div>
+                    <div class="field-item">
+                        <input type="text" class="field-key" placeholder="字段名（如code）" value="code">
+                        <input type="text" class="field-value" placeholder="字段描述（如唯一核心识别码）" value="唯一核心识别码">
+                        <button type="button" class="remove-field-btn" onclick="removeField(this)">删除</button>
+                    </div>
+                </div>
+                <button type="button" class="add-field-btn" onclick="addField('required')">添加必需字段</button>
+            </div>
+            
+            <div class="field-config-section" style="margin-top: 20px;">
+                <h3>可选字段 <span style="font-size: 12px; color: #999;">(可能会出现的内容）</span></h3>
+                <div id="optionalFieldsContainer">
+                    <div class="field-item">
+                        <input type="text" class="field-key" placeholder="字段名（如inferredType）" value="inferredType">
+                        <input type="text" class="field-value" placeholder="字段描述（如信息类型）" value="信息类型">
+                        <button type="button" class="remove-field-btn" onclick="removeField(this)">删除</button>
+                    </div>
+                    <div class="field-item">
+                        <input type="text" class="field-key" placeholder="字段名（如estimatedTime）" value="estimatedTime">
+                        <input type="text" class="field-value" placeholder="字段描述（如ISO8601格式核心时间）" value="ISO8601格式核心时间">
+                        <button type="button" class="remove-field-btn" onclick="removeField(this)">删除</button>
+                    </div>
+                </div>
+                <button type="button" class="add-field-btn" onclick="addField('optional')">添加可选字段</button>
+            </div>
+        </div>
+        
+        <style>
+            .field-config-section h3 {
+                font-size: 18px;
+                color: #2d3748;
+                margin-bottom: 16px;
+                font-weight: 600;
+            }
+            .field-item {
+                display: flex;
+                gap: 12px;
+                align-items: center;
+                margin-bottom: 12px;
+                padding: 12px;
+                background: #f8fafc;
+                border-radius: 10px;
+                transition: all 0.2s ease;
+                flex-wrap: wrap;
+            }
+            .field-item:hover {
+                background: #f1f5f9;
+            }
+            .field-item input {
+                flex: 1;
+                min-width: 120px;
+                padding: 10px 14px;
+                border: 1.5px solid #e2e8f0;
+                border-radius: 8px;
+                font-size: 14px;
+                transition: all 0.2s ease;
+            }
+            .field-item input:focus {
+                outline: none;
+                border-color: #4f46e5;
+                box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            }
+            .add-field-btn, .remove-field-btn {
+                padding: 10px 18px;
+                border: none;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+            .add-field-btn {
+                background: linear-gradient(135deg, #10b981, #059669);
+                color: white;
+                box-shadow: 0 3px 10px rgba(16, 185, 129, 0.2);
+            }
+            .add-field-btn:hover {
+                background: linear-gradient(135deg, #059669, #047857);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            }
+            .remove-field-btn {
+                background: linear-gradient(135deg, #ef4444, #dc2626);
+                color: white;
+                padding: 8px 14px;
+                box-shadow: 0 3px 10px rgba(239, 68, 68, 0.2);
+            }
+            .remove-field-btn:hover {
+                background: linear-gradient(135deg, #dc2626, #b91c1c);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            }
+        </style>
+        
+        <div class="section">
+            <h2>3. 输出规则</h2>
+            <div class="checkbox-group">
+                <!-- 默认选中的规则放前面 -->
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule1" checked>
+                    <label for="rule1">仅提取最上方1条同类信息</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule2" checked>
+                    <label for="rule2">严格使用英文JSON语法</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule3" checked>
+                    <label for="rule3">无额外输出内容</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule4" checked>
+                    <label for="rule4">字段无重复、无冗余</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule7" checked>
+                    <label for="rule7">仅提取核心内容，去除冗余信息</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule10" checked>
+                    <label for="rule10">支持中英文混合识别</label>
+                </div>
+                
+                <!-- 未选中的规则放后面 -->
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule5">
+                    <label for="rule5">忽略特殊字符和空格</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule6">
+                    <label for="rule6">支持多种日期格式自动转换</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule8">
+                    <label for="rule8">处理模糊匹配，提高识别准确率</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule9">
+                    <label for="rule9">忽略广告和无关信息</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule11">
+                    <label for="rule11">识别连续文本中的关键信息</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule12">
+                    <label for="rule12">保持输出JSON的简洁性</label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>4. 自定义规则</h2>
+            <div class="info-box">
+                <p>添加额外的自定义规则，支持可视化管理。</p>
+            </div>
+            
+            <div class="custom-rules-manager">
+                <div class="add-rule-container">
+                    <input type="text" id="newRuleInput" placeholder="输入自定义规则（如：忽略手写备注）" style="flex: 1; margin-right: 10px;">
+                    <button type="button" onclick="addCustomRule()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">添加规则</button>
+                </div>
+                
+                <div id="customRulesList" style="margin-top: 15px; max-height: 200px; overflow-y: auto;">
+                    <!-- 自定义规则将动态添加到这里 -->
+                </div>
+                
+                <div class="form-group" style="margin-top: 20px;">
+                    <label for="customRulesText" style="font-size: 12px; color: #666;">或直接编辑文本（每行一条，支持批量添加）</label>
+                    <textarea id="customRulesText" placeholder="例如：
+- 处理连续文本时智能拆分
+- 忽略背景干扰信息" style="min-height: 100px;"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+            .custom-rules-manager {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+            
+            .add-rule-container {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 16px;
+                background: #f8fafc;
+                border-radius: 12px;
+                transition: all 0.2s ease;
+                flex-wrap: wrap;
+            }
+            
+            .add-rule-container:hover {
+                background: #f1f5f9;
+            }
+            
+            #newRuleInput {
+                flex: 1;
+                min-width: 200px;
+                padding: 12px 16px;
+                border: 1.5px solid #e2e8f0;
+                border-radius: 10px;
+                font-size: 15px;
+                transition: all 0.2s ease;
+            }
+            
+            #newRuleInput:focus {
+                outline: none;
+                border-color: #4f46e5;
+                box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            }
+            
+            #customRulesList {
+                margin-top: 0;
+                max-height: 220px;
+                overflow-y: auto;
+                background: #f8fafc;
+                border-radius: 12px;
+                padding: 12px;
+                border: 1.5px solid #e2e8f0;
+                transition: all 0.2s ease;
+                position: relative;
+            }
+            
+            /* 空状态提示 */
+            #customRulesList.empty::before {
+                content: "暂无自定义规则，点击上方按钮添加"; 
+                display: block;
+                text-align: center;
+                padding: 40px 20px;
+                color: #94a3b8;
+                font-size: 14px;
+                font-style: italic;
+            }
+            
+            /* 有规则时隐藏空状态提示 */
+            #customRulesList:not(.empty)::before {
+                display: none;
+            }
+            
+            #customRulesList::-webkit-scrollbar {
+                width: 6px;
+            }
+            
+            #customRulesList::-webkit-scrollbar-track {
+                background: #f1f5f9;
+                border-radius: 3px;
+            }
+            
+            #customRulesList::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 3px;
+            }
+            
+            #customRulesList::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            }
+            
+            .rule-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 16px;
+                background: white;
+                border-radius: 10px;
+                margin-bottom: 8px;
+                border: 1.5px solid #e2e8f0;
+                transition: all 0.2s ease;
+            }
+            
+            .rule-item:hover {
+                background: #f8fafc;
+                border-color: #cbd5e1;
+                transform: translateX(2px);
+            }
+            
+            .rule-item span {
+                flex: 1;
+                font-size: 15px;
+                color: #2d3748;
+            }
+            
+            .delete-rule-btn {
+                padding: 8px 14px;
+                background: linear-gradient(135deg, #ef4444, #dc2626);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                transition: all 0.2s ease;
+            }
+            
+            .delete-rule-btn:hover {
+                background: linear-gradient(135deg, #dc2626, #b91c1c);
+                transform: translateY(-1px);
+                box-shadow: 0 3px 10px rgba(239, 68, 68, 0.3);
+            }
+        </style>
+        
+        <div class="button-group">
+            <button id="generateBtn">生成提示词</button>
+            <button id="resetBtn">重置</button>
+            <button id="copyBtn">复制结果</button>
+        </div>
+        
+        <div class="result-section">
+            <h2>生成的提示词</h2>
+            <textarea id="result" readonly></textarea>
+            <div class="success-message" id="copyMessage">已复制到剪贴板！</div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('generateBtn').addEventListener('click', generatePrompt);
+        document.getElementById('resetBtn').addEventListener('click', resetForm);
+        document.getElementById('copyBtn').addEventListener('click', copyResult);
+        
+        // 字段管理函数
+        function addField(type) {
+            const containerId = type === 'required' ? 'requiredFieldsContainer' : 'optionalFieldsContainer';
+            const container = document.getElementById(containerId);
+            
+            const fieldItem = document.createElement('div');
+            fieldItem.className = 'field-item';
+            fieldItem.innerHTML = `
+                <input type="text" class="field-key" placeholder="字段名">
+                <input type="text" class="field-value" placeholder="字段描述">
+                <button type="button" class="remove-field-btn" onclick="removeField(this)">删除</button>
+            `;
+            
+            container.appendChild(fieldItem);
+        }
+        
+        function removeField(btn) {
+            const fieldItem = btn.parentElement;
+            fieldItem.remove();
+        }
+        
+        // 获取字段配置
+        function getFieldConfig() {
+            const requiredFields = {};
+            const requiredItems = document.querySelectorAll('#requiredFieldsContainer .field-item');
+            requiredItems.forEach(item => {
+                const key = item.querySelector('.field-key').value.trim();
+                const value = item.querySelector('.field-value').value.trim();
+                if (key && value) {
+                    requiredFields[key] = value;
+                }
+            });
+            
+            const optionalFields = {};
+            const optionalItems = document.querySelectorAll('#optionalFieldsContainer .field-item');
+            optionalItems.forEach(item => {
+                const key = item.querySelector('.field-key').value.trim();
+                const value = item.querySelector('.field-value').value.trim();
+                if (key && value) {
+                    optionalFields[key] = value;
+                }
+            });
+            
+            return { required: requiredFields, optional: optionalFields };
+        }
+        
+        // 自定义规则管理函数
+        function updateEmptyState() {
+            const rulesList = document.getElementById('customRulesList');
+            const ruleItems = rulesList.querySelectorAll('.rule-item');
+            if (ruleItems.length === 0) {
+                rulesList.classList.add('empty');
+            } else {
+                rulesList.classList.remove('empty');
+            }
+        }
+        
+        function addCustomRule() {
+            const input = document.getElementById('newRuleInput');
+            const ruleText = input.value.trim();
+            
+            if (ruleText) {
+                const rulesList = document.getElementById('customRulesList');
+                
+                const ruleItem = document.createElement('div');
+                ruleItem.className = 'rule-item';
+                ruleItem.innerHTML = `
+                    <span>${ruleText}</span>
+                    <button type="button" class="delete-rule-btn" onclick="deleteCustomRule(this)">删除</button>
+                `;
+                
+                rulesList.appendChild(ruleItem);
+                input.value = '';
+                updateEmptyState();
+            }
+        }
+        
+        function deleteCustomRule(btn) {
+            const ruleItem = btn.parentElement;
+            ruleItem.remove();
+            updateEmptyState();
+        }
+        
+        function getCustomRules() {
+            const customRules = [];
+            
+            // 获取可视化添加的规则
+            const ruleItems = document.querySelectorAll('#customRulesList .rule-item span');
+            ruleItems.forEach(item => {
+                const ruleText = item.textContent.trim();
+                if (ruleText) {
+                    customRules.push(ruleText);
+                }
+            });
+            
+            // 获取文本框添加的规则
+            const textRules = document.getElementById('customRulesText').value.trim();
+            if (textRules) {
+                const lines = textRules.split('\n');
+                lines.forEach(line => {
+                    let ruleText = line.trim();
+                    // 移除可能的前缀（如-、*等）
+                    ruleText = ruleText.replace(/^[-*+]\s*/, '');
+                    if (ruleText) {
+                        customRules.push(ruleText);
+                    }
+                });
+            }
+            
+            // 去重
+            return [...new Set(customRules)];
+        }
+        
+        function generatePrompt() {
+            const targetType = document.getElementById('targetType').value;
+            const inputSource = document.getElementById('inputSource').value;
+            
+            const rules = [];
+            if (document.getElementById('rule1').checked) rules.push('仅提取最上方1条同类信息');
+            if (document.getElementById('rule2').checked) rules.push('严格使用英文JSON语法');
+            if (document.getElementById('rule3').checked) rules.push('无额外输出内容');
+            if (document.getElementById('rule4').checked) rules.push('字段无重复、无冗余');
+            if (document.getElementById('rule5').checked) rules.push('忽略特殊字符和空格');
+            if (document.getElementById('rule6').checked) rules.push('支持多种日期格式自动转换');
+            if (document.getElementById('rule7').checked) rules.push('仅提取核心内容，去除冗余信息');
+            if (document.getElementById('rule8').checked) rules.push('处理模糊匹配，提高识别准确率');
+            if (document.getElementById('rule9').checked) rules.push('忽略广告和无关信息');
+            if (document.getElementById('rule10').checked) rules.push('支持中英文混合识别');
+            if (document.getElementById('rule11').checked) rules.push('识别连续文本中的关键信息');
+            if (document.getElementById('rule12').checked) rules.push('保持输出JSON的简洁性');
+            
+            // 行业特定规则映射
+            const industryRules = {
+                "医疗": [
+                    "识别医疗相关术语，如疾病名称、药品名称、诊断结果",
+                    "保护患者隐私，敏感信息可脱敏处理",
+                    "准确识别医疗编号、日期和剂量"
+                ],
+                "金融": [
+                    "准确识别金额、利率、账户号码等金融数据",
+                    "支持各种货币符号识别",
+                    "识别交易类型、日期和时间"
+                ],
+                "教育": [
+                    "识别学生姓名、学号、成绩等教育数据",
+                    "支持识别课程名称、学分、考试类型",
+                    "准确识别日期和时间"
+                ],
+                "电商": [
+                    "识别商品名称、价格、SKU等电商数据",
+                    "支持识别订单状态、物流信息",
+                    "准确识别促销信息和优惠券"
+                ],
+                "物流": [
+                    "识别运单号、发件人、收件人信息",
+                    "支持识别物流状态、中转信息",
+                    "准确识别日期和时间"
+                ],
+                "餐饮": [
+                    "识别菜品名称、价格、数量",
+                    "支持识别桌号、订单号、取餐码",
+                    "准确识别备注信息"
+                ],
+                "出行": [
+                    "识别车次、航班号、座位号等出行数据",
+                    "支持识别出发地、目的地、出发时间",
+                    "准确识别票价和乘客信息"
+                ],
+                "制造业": [
+                    "识别产品型号、规格、批次号",
+                    "支持识别生产日期、有效期",
+                    "准确识别质量检测数据"
+                ],
+                "房地产": [
+                    "识别房源信息、价格、面积",
+                    "支持识别产权信息、户型",
+                    "准确识别地理位置"
+                ]
+            };
+            
+            let prompt = `你是智能信息识别专家，需从${inputSource}中提取${targetType}领域的结构化信息并输出合法JSON，无任何额外内容，语法严格使用英文符号。规则如下：\n\n`;
+            
+            // 添加行业特定规则
+            if (industryRules[targetType]) {
+                industryRules[targetType].forEach(rule => {
+                    rules.push(rule);
+                });
+            }
+            
+            // 获取字段配置
+            const fieldConfig = getFieldConfig();
+            const required = fieldConfig.required;
+            const optional = fieldConfig.optional;
+            
+            // 必需字段
+            prompt += `1. 必需字段（一定会出现的内容，各仅出现1次，不可缺失）：\n`;
+            for (const [key, value] of Object.entries(required)) {
+                prompt += `   - "${key}"：${value}\n`;
+            }
+            
+            // 可选字段
+            prompt += `\n2. 可选字段（可能会出现的内容，各仅出现1次，无则留空字符串/空数组）：\n`;
+            for (const [key, value] of Object.entries(optional)) {
+                prompt += `   - "${key}"：${value}\n`;
+            }
+            
+            // 强制要求
+            prompt += `\n3. 强制要求：\n`;
+            rules.forEach(rule => {
+                prompt += `   - ${rule}\n`;
+            });
+            
+            // 自定义规则
+            const customRules = getCustomRules();
+            customRules.forEach(rule => {
+                prompt += `   - ${rule}\n`;
+            });
+            
+            // 输入源特定规则
+            if (inputSource.includes('图片')) {
+                prompt += `   - 处理图片内容时，需准确识别关键信息，忽略背景干扰\n`;
+            }
+            if (inputSource.includes('文本')) {
+                prompt += `   - 处理连续文本时，需智能拆分识别各字段，忽略无意义字符\n`;
+            }
+            
+            // 结尾
+            prompt += `\n输出极致干净、无重复、无冗余的JSON。`;
+            
+            document.getElementById('result').value = prompt;
+        }
+        
+        function resetForm() {
+            // 重置基础配置
+            document.getElementById('targetType').value = '通用';
+            document.getElementById('inputSource').value = '图片和文本';
+            
+            // 重置必需字段
+            const requiredContainer = document.getElementById('requiredFieldsContainer');
+            requiredContainer.innerHTML = `
+                <div class="field-item">
+                    <input type="text" class="field-key" placeholder="字段名（如title）" value="title">
+                    <input type="text" class="field-value" placeholder="字段描述（如品牌名）" value="品牌名">
+                    <button type="button" class="remove-field-btn" onclick="removeField(this)">删除</button>
+                </div>
+                <div class="field-item">
+                    <input type="text" class="field-key" placeholder="字段名（如code）" value="code">
+                    <input type="text" class="field-value" placeholder="字段描述（如唯一核心识别码）" value="唯一核心识别码">
+                    <button type="button" class="remove-field-btn" onclick="removeField(this)">删除</button>
+                </div>
+            `;
+            
+            // 重置可选字段
+            const optionalContainer = document.getElementById('optionalFieldsContainer');
+            optionalContainer.innerHTML = `
+                <div class="field-item">
+                    <input type="text" class="field-key" placeholder="字段名（如inferredType）" value="inferredType">
+                    <input type="text" class="field-value" placeholder="字段描述（如信息类型）" value="信息类型">
+                    <button type="button" class="remove-field-btn" onclick="removeField(this)">删除</button>
+                </div>
+                <div class="field-item">
+                    <input type="text" class="field-key" placeholder="字段名（如estimatedTime）" value="estimatedTime">
+                    <input type="text" class="field-value" placeholder="字段描述（如ISO8601格式核心时间）" value="ISO8601格式核心时间">
+                    <button type="button" class="remove-field-btn" onclick="removeField(this)">删除</button>
+                </div>
+            `;
+            
+            // 重置自定义规则
+            document.getElementById('newRuleInput').value = '';
+            document.getElementById('customRulesList').innerHTML = '';
+            document.getElementById('customRulesText').value = '';
+            updateEmptyState();
+            
+            // 重置输出规则（默认选中常用规则）
+            document.getElementById('rule1').checked = true;   // 仅提取最上方1条同类信息
+            document.getElementById('rule2').checked = true;   // 严格使用英文JSON语法
+            document.getElementById('rule3').checked = true;   // 无额外输出内容
+            document.getElementById('rule4').checked = true;   // 字段无重复、无冗余
+            document.getElementById('rule5').checked = false;  // 忽略特殊字符和空格
+            document.getElementById('rule6').checked = false;  // 支持多种日期格式自动转换
+            document.getElementById('rule7').checked = true;   // 仅提取核心内容，去除冗余信息
+            document.getElementById('rule8').checked = false;  // 处理模糊匹配，提高识别准确率
+            document.getElementById('rule9').checked = false;  // 忽略广告和无关信息
+            document.getElementById('rule10').checked = true;  // 支持中英文混合识别
+            document.getElementById('rule11').checked = false; // 识别连续文本中的关键信息
+            document.getElementById('rule12').checked = false; // 保持输出JSON的简洁性
+            
+            document.getElementById('result').value = '';
+        }
+        
+        function copyResult() {
+            const result = document.getElementById('result');
+            const message = document.getElementById('copyMessage');
+            
+            result.select();
+            result.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            
+            message.classList.add('show');
+            setTimeout(() => {
+                message.classList.remove('show');
+            }, 2000);
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 更新自定义规则列表的空状态
+            updateEmptyState();
+        });
+        
+        // 初始化生成默认提示词
+        generatePrompt();
+    </script>
+</body>
+</html>
+

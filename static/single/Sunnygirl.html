@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>100%晴天女孩</title>
+        <link rel="icon" type="image/ico" href="https://cdn.jsdelivr.net/gh/L-20021213/picture@1.0.0/Blog/logo.png">
+    <script src="https://cdn.jsdelivr.net/gh/L-20021213/Sunnygirl/js/index.js"></script>
+</head>
+<style>
+*{
+    padding: 0;
+    margin: 0;
+}
+
+.main{
+    /* border: 1px solid green; */
+    background-image: url(https://cdn.jsdelivr.net/gh/L-20021213/Sunnygirl/img/main.jpg);
+    background-size: cover;
+    width: 900px;
+    height: 660px;
+    margin: 20px auto 30px auto;
+    position: relative;
+}
+
+.input-box{
+    /* border: 1px solid red; */
+    background-color: bisque;
+    position: absolute;
+    bottom: 0;
+    right: 55px;
+    width: 370px;
+    height: 335px;
+    border-radius: 10px;
+    box-shadow: rgb(85, 85, 85) 0px 0px 5px;
+}
+
+.box1{
+    /* border: 1px solid indigo; */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 15px 0px 15px;
+}
+
+.box1 span{
+    font-size: 22px;
+    color: red;
+}
+
+#img-stop{
+    width: 25px;
+    height: 25px;
+    display: block;
+}
+
+#img-play{
+    width: 25px;
+    height: 25px;
+    display: none;
+}
+
+.box2{
+    /* border: 1px solid hotpink; */
+    margin: 10px 15px 0px 15px;
+}
+
+.box3{
+    /* border: 1px solid aqua; */
+    display: flex;
+    margin: 10px 15px 0px 15px;
+    justify-content: space-between;
+}
+
+.box4{
+    /* border: 1px solid thistle; */
+    margin: 10px 15px 0px 15px;
+}
+
+.input-address{
+    width: 99%;
+}
+
+.box5{
+    /* border: 1px solid salmon; */
+    margin: 10px 15px 0px 15px;
+}
+
+.input-reason{
+    width: 99.5%;
+    height: 50px;
+    resize: none;
+}
+
+.box6{
+    /* border: 1px solid olivedrab; */
+    margin: 5px 15px 0px 15px;
+    text-align: center;
+}
+
+.box6 button{
+    background: red;
+    border: none;
+    outline: none;
+    border-radius: 20px;
+    color: white;
+    width: 100px;
+    height: 35px;
+}
+</style>
+<body onclick="auto_play()">
+    <audio src="https://cdn.jsdelivr.net/gh/L-20021213/Sunnygirl/media/bg_music.mp3" loop="true" autoplay class="music"></audio>
+    <div class="main">
+        <div class="input-box">
+            <div class="box1">
+                <span>¥0</span>
+                <img src="https://cdn.jsdelivr.net/gh/L-20021213/Sunnygirl/img/stop.png" id="img-stop" onclick="music_stop()">
+                <img src="https://cdn.jsdelivr.net/gh/L-20021213/Sunnygirl/img/play.png" id="img-play" onclick="music_play()">
+            </div>
+            <div class="box2">
+                因为下雨而困扰的你，100%的晴天女孩会为你带来阳光😄无论在什么地方...
+            </div>
+            <div class="box3">
+                <div class="input-name">
+                    <div>你的名字</div>
+                    <input type="text">
+                </div>
+                <div class="input-date">
+                    <div>日期：</div>
+                    <input type="text">
+                </div>
+            </div>
+            <div class="box4">
+                <div>希望天晴的地址：</div>
+                <input type="text" class="input-address">
+            </div>
+            <div class="box5">
+                <div>希望天晴的理由：</div>
+                <textarea class="input-reason"></textarea>
+            </div>
+            <div class="box6">
+                <button id="btn">提交请求</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+
