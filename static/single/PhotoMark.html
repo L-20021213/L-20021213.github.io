@@ -1,0 +1,1378 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>摄影水印添加工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: #333;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 32px;
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            letter-spacing: -0.5px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .panel {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .photo-panel {
+            display: flex;
+            flex-direction: column;
+            height: fit-content;
+            max-height: 520px;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1a1a1a;
+        }
+
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            background: #fafafa;
+        }
+
+        .upload-area:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #2563eb;
+            background: #eff6ff;
+            transform: scale(1.01);
+        }
+
+        .upload-area.has-image {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+
+        .upload-area input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .upload-area p {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .upload-area.has-image .upload-icon,
+        .upload-area.has-image p {
+            display: none;
+        }
+
+        .upload-preview {
+            display: none;
+            width: 100%;
+            height: 80px;
+            object-fit: contain;
+        }
+
+        .upload-area.has-image .upload-preview {
+            display: block;
+        }
+
+        .preview-container {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .preview-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .preview-container::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 3px;
+        }
+
+        .preview-container::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        .preview-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+            background: #f0f0f0;
+        }
+
+        .preview-item:hover {
+            border-color: #2563eb;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-item .remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 22px;
+            height: 22px;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 12px;
+            cursor: pointer;
+            display: none;
+            transition: background 0.2s;
+        }
+
+        .preview-item:hover .remove-btn {
+            display: block;
+        }
+
+        .preview-item .remove-btn:hover {
+            background: #dc2626;
+        }
+
+        .watermark-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+            margin: 16px auto;
+            background: #fafafa;
+            display: none;
+        }
+
+        .watermark-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #444;
+        }
+
+        .form-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e9ecef;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .form-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            transition: transform 0.15s;
+        }
+
+        .form-group input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .range-value {
+            display: inline-block;
+            margin-left: 8px;
+            font-size: 0.85rem;
+            color: #2563eb;
+            font-weight: 500;
+        }
+
+        .position-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .live-preview-panel {
+            margin-top: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fafafa;
+            display: none;
+        }
+
+        .live-preview-panel .preview-title {
+            padding: 10px 16px;
+            background: #f0f0f0;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-bottom: 1px solid #e9ecef;
+            color: #444;
+        }
+
+        .live-preview-container {
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            min-height: 200px;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .live-preview-image {
+            max-width: 100%;
+            max-height: 600px;
+            border-radius: 8px;
+            object-fit: contain;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .position-btn {
+            padding: 12px 8px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .position-btn:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .position-btn.active {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: #fff;
+        }
+
+        .position-btn .icon {
+            font-size: 16px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .progress-bar .progress {
+            height: 100%;
+            background: #2563eb;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .result-panel {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+            background: #fafafa;
+            transition: box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 150px;
+        }
+
+        .result-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-item img {
+            width: 100%;
+            height: 100%;
+            max-height: 200px;
+            object-fit: contain;
+        }
+
+        .result-item .actions {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            display: flex;
+            gap: 6px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .result-item:hover .actions {
+            opacity: 1;
+        }
+
+        .result-item .action-btn {
+            padding: 6px 10px;
+            border-radius: 16px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            transition: all 0.2s;
+        }
+
+        .result-item .download-btn {
+            background: rgba(255, 255, 255, 0.95);
+            color: #2563eb;
+        }
+
+        .result-item .download-btn:hover {
+            background: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+        }
+
+        .result-item .color-btn {
+            background: rgba(255, 255, 255, 0.95);
+            color: #f59e0b;
+        }
+
+        .result-item .color-btn:hover {
+            background: #f59e0b;
+            color: #fff;
+            border-color: #f59e0b;
+        }
+
+        .auto-select-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .auto-select-box input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #2563eb;
+        }
+
+        .auto-select-box label {
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #555;
+            margin-bottom: 0;
+        }
+
+        .watermark-type-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .watermark-type-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            background: #fff;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .watermark-type-btn:hover {
+            border-color: #2563eb;
+        }
+
+        .watermark-type-btn.active {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .watermark-type-btn.active .swatch {
+            border-color: #2563eb;
+        }
+
+        .watermark-type-btn .swatch {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            transition: border-color 0.15s;
+        }
+
+        .watermark-type-btn .swatch.white {
+            background: #fff;
+            border-color: #ddd;
+        }
+
+        .watermark-type-btn .swatch.black {
+            background: #1a1a1a;
+        }
+
+        .watermark-type-btn span {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .watermark-upload-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .watermark-hint {
+            font-size: 0.75rem;
+            color: #999;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .position-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .panel {
+                padding: 16px;
+            }
+
+            .upload-area {
+                padding: 16px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .watermark-upload-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📷 摄影水印添加工具</h1>
+        
+        <div class="main-content">
+            <div class="panel">
+                <div class="panel-title">
+                    <span>🎨</span>
+                    <span>水印设置</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>上传水印图片</label>
+                    <div class="watermark-upload-section">
+                        <div class="upload-area" id="whiteWatermarkUpload">
+                            <div class="upload-icon">⬜</div>
+                            <p>上传白色水印</p>
+                            <img class="upload-preview" id="whiteWatermarkPreview" src="" alt="">
+                            <input type="file" id="whiteWatermarkFile" accept="image/*">
+                        </div>
+                        <div class="upload-area" id="blackWatermarkUpload">
+                            <div class="upload-icon">⬛</div>
+                            <p>上传黑色水印</p>
+                            <img class="upload-preview" id="blackWatermarkPreview" src="" alt="">
+                            <input type="file" id="blackWatermarkFile" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="watermark-hint" id="watermarkHint">请分别上传白色和黑色水印图片</div>
+                </div>
+
+                <div class="watermark-type-selector">
+                    <button class="watermark-type-btn" id="whiteWatermarkBtn">
+                        <div class="swatch white"></div>
+                        <span>白色水印</span>
+                    </button>
+                    <button class="watermark-type-btn" id="blackWatermarkBtn">
+                        <div class="swatch black"></div>
+                        <span>黑色水印</span>
+                    </button>
+                </div>
+
+                <div class="auto-select-box">
+                    <input type="checkbox" id="autoSelectWatermark">
+                    <label for="autoSelectWatermark">根据照片亮度自动选择水印</label>
+                </div>
+
+                <div class="form-group">
+                    <label>水印大小: <span class="range-value" id="sizeValue">13%</span></label>
+                    <input type="range" id="watermarkSize" min="5" max="50" value="13">
+                </div>
+
+                <div class="form-group">
+                    <label>水平偏移: <span class="range-value" id="offsetXValue">0</span></label>
+                    <input type="range" id="offsetX" min="-50" max="50" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label>垂直偏移: <span class="range-value" id="offsetYValue">0</span></label>
+                    <input type="range" id="offsetY" min="-50" max="50" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label>水印位置</label>
+                    <div class="position-grid">
+                        <button class="position-btn" data-position="top-left">
+                            <span class="icon">↖</span>
+                            <span>左上</span>
+                        </button>
+                        <button class="position-btn" data-position="top-center">
+                            <span class="icon">⬆</span>
+                            <span>中上</span>
+                        </button>
+                        <button class="position-btn" data-position="top-right">
+                            <span class="icon">↗</span>
+                            <span>右上</span>
+                        </button>
+                        <button class="position-btn" data-position="middle-left">
+                            <span class="icon">⬅</span>
+                            <span>中左</span>
+                        </button>
+                        <button class="position-btn" data-position="center">
+                            <span class="icon">◎</span>
+                            <span>中心</span>
+                        </button>
+                        <button class="position-btn" data-position="middle-right">
+                            <span class="icon">➡</span>
+                            <span>中右</span>
+                        </button>
+                        <button class="position-btn" data-position="bottom-left">
+                            <span class="icon">↙</span>
+                            <span>左下</span>
+                        </button>
+                        <button class="position-btn active" data-position="bottom-center">
+                            <span class="icon">⬇</span>
+                            <span>中下</span>
+                        </button>
+                        <button class="position-btn" data-position="bottom-right">
+                            <span class="icon">↘</span>
+                            <span>右下</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="live-preview-panel" id="livePreviewPanel">
+                    <div class="preview-title">🎯 实时预览</div>
+                    <div class="live-preview-container">
+                        <img id="livePreviewImage" class="live-preview-image" src="" alt="实时预览">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel photo-panel">
+                <div class="panel-title">
+                    <span>📸</span>
+                    <span>照片上传</span>
+                </div>
+                
+                <div class="upload-area" id="photoUpload">
+                    <div class="upload-icon">📷</div>
+                    <p>点击或拖拽上传照片</p>
+                    <p>支持批量上传，支持 JPG、PNG 格式</p>
+                    <input type="file" id="photoFiles" accept="image/*" multiple>
+                </div>
+                
+                <div class="preview-container" id="photoPreview"></div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="addWatermarkBtn">添加水印</button>
+                    <button class="btn btn-secondary" id="clearPhotosBtn">清空照片</button>
+                </div>
+                
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress" id="progress"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-panel">
+            <div class="panel-title">
+                <span>✨</span>
+                <span>处理结果</span>
+                <span id="resultCount" style="margin-left: auto; font-size: 0.9rem; color: #2563eb; font-weight: 400;"></span>
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
+                <button class="btn btn-primary" id="downloadAllBtn" style="display: none;">📥 批量下载全部</button>
+            </div>
+            <div class="result-grid" id="resultGrid"></div>
+            <div class="empty-state" id="resultEmptyState">
+                <div class="icon">📭</div>
+                <p>暂无处理结果</p>
+                <p style="font-size: 0.8rem; margin-top: 4px;">上传照片并添加水印后，结果将显示在这里</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const whiteWatermarkFileInput = document.getElementById('whiteWatermarkFile');
+        const blackWatermarkFileInput = document.getElementById('blackWatermarkFile');
+        const whiteWatermarkPreview = document.getElementById('whiteWatermarkPreview');
+        const blackWatermarkPreview = document.getElementById('blackWatermarkPreview');
+        const whiteWatermarkUpload = document.getElementById('whiteWatermarkUpload');
+        const blackWatermarkUpload = document.getElementById('blackWatermarkUpload');
+        const watermarkHint = document.getElementById('watermarkHint');
+        const photoFilesInput = document.getElementById('photoFiles');
+        const photoPreview = document.getElementById('photoPreview');
+        const photoUpload = document.getElementById('photoUpload');
+        const positionBtns = document.querySelectorAll('.position-btn');
+        const watermarkSize = document.getElementById('watermarkSize');
+        const sizeValue = document.getElementById('sizeValue');
+        const offsetX = document.getElementById('offsetX');
+        const offsetXValue = document.getElementById('offsetXValue');
+        const offsetY = document.getElementById('offsetY');
+        const offsetYValue = document.getElementById('offsetYValue');
+        const addWatermarkBtn = document.getElementById('addWatermarkBtn');
+        const clearPhotosBtn = document.getElementById('clearPhotosBtn');
+        const resultGrid = document.getElementById('resultGrid');
+        const progressBar = document.getElementById('progressBar');
+        const progress = document.getElementById('progress');
+        const downloadAllBtn = document.getElementById('downloadAllBtn');
+        const resultCount = document.getElementById('resultCount');
+        const resultEmptyState = document.getElementById('resultEmptyState');
+        const whiteWatermarkBtn = document.getElementById('whiteWatermarkBtn');
+        const blackWatermarkBtn = document.getElementById('blackWatermarkBtn');
+        const autoSelectWatermark = document.getElementById('autoSelectWatermark');
+        const livePreviewPanel = document.getElementById('livePreviewPanel');
+        const livePreviewImage = document.getElementById('livePreviewImage');
+
+        let watermarkImages = {
+            white: null,
+            black: null
+        };
+        let currentWatermarkType = 'white';
+        let photos = [];
+        let selectedPosition = 'bottom-center';
+        let results = [];
+
+        whiteWatermarkFileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const img = await loadImage(file);
+            if (img) {
+                watermarkImages.white = img;
+                whiteWatermarkPreview.src = img.src;
+                whiteWatermarkUpload.classList.add('has-image');
+                whiteWatermarkBtn.classList.add('active');
+                currentWatermarkType = 'white';
+                blackWatermarkBtn.classList.remove('active');
+            }
+            
+            updateWatermarkHint();
+            renderLivePreview();
+        });
+
+        blackWatermarkFileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const img = await loadImage(file);
+            if (img) {
+                watermarkImages.black = img;
+                blackWatermarkPreview.src = img.src;
+                blackWatermarkUpload.classList.add('has-image');
+            }
+            
+            updateWatermarkHint();
+            renderLivePreview();
+        });
+
+        whiteWatermarkBtn.addEventListener('click', () => {
+            if (watermarkImages.white) {
+                currentWatermarkType = 'white';
+                whiteWatermarkBtn.classList.add('active');
+                blackWatermarkBtn.classList.remove('active');
+                autoSelectWatermark.checked = false;
+                renderLivePreview();
+            }
+        });
+
+        blackWatermarkBtn.addEventListener('click', () => {
+            if (watermarkImages.black) {
+                currentWatermarkType = 'black';
+                blackWatermarkBtn.classList.add('active');
+                whiteWatermarkBtn.classList.remove('active');
+                autoSelectWatermark.checked = false;
+                renderLivePreview();
+            }
+        });
+
+        autoSelectWatermark.addEventListener('change', () => {
+            if (autoSelectWatermark.checked) {
+                whiteWatermarkBtn.classList.remove('active');
+                blackWatermarkBtn.classList.remove('active');
+            } else if (watermarkImages[currentWatermarkType]) {
+                if (currentWatermarkType === 'white') {
+                    whiteWatermarkBtn.classList.add('active');
+                } else {
+                    blackWatermarkBtn.classList.add('active');
+                }
+            }
+            renderLivePreview();
+        });
+
+        function updateWatermarkHint() {
+            const count = Object.values(watermarkImages).filter(Boolean).length;
+            if (count === 0) {
+                watermarkHint.textContent = '请分别上传白色和黑色水印图片';
+            } else if (count === 1) {
+                watermarkHint.textContent = watermarkImages.white ? '已上传白色水印，请上传黑色水印' : '已上传黑色水印，请上传白色水印';
+            } else {
+                watermarkHint.textContent = '两张水印图片都已上传';
+            }
+        }
+
+        photoFilesInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+
+            for (const file of files) {
+                const img = await loadImage(file);
+                if (img) {
+                    photos.push({
+                        file: file,
+                        image: img
+                    });
+                    addPhotoPreview(file, img, photos.length - 1);
+                }
+            }
+
+            renderLivePreview();
+        });
+
+        photoUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            photoUpload.classList.add('dragover');
+        });
+
+        photoUpload.addEventListener('dragleave', () => {
+            photoUpload.classList.remove('dragover');
+        });
+
+        photoUpload.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            photoUpload.classList.remove('dragover');
+            
+            const files = Array.from(e.dataTransfer.files);
+            if (files.length === 0) return;
+
+            for (const file of files) {
+                if (!file.type.startsWith('image/')) continue;
+                const img = await loadImage(file);
+                if (img) {
+                    photos.push({
+                        file: file,
+                        image: img
+                    });
+                    addPhotoPreview(file, img, photos.length - 1);
+                }
+            }
+
+            renderLivePreview();
+        });
+
+        whiteWatermarkUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            whiteWatermarkUpload.classList.add('dragover');
+        });
+
+        whiteWatermarkUpload.addEventListener('dragleave', () => {
+            whiteWatermarkUpload.classList.remove('dragover');
+        });
+
+        whiteWatermarkUpload.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            whiteWatermarkUpload.classList.remove('dragover');
+            
+            const file = e.dataTransfer.files[0];
+            if (!file || !file.type.startsWith('image/')) return;
+
+            const img = await loadImage(file);
+            if (img) {
+                watermarkImages.white = img;
+                whiteWatermarkPreview.src = img.src;
+                whiteWatermarkUpload.classList.add('has-image');
+                whiteWatermarkBtn.classList.add('active');
+                currentWatermarkType = 'white';
+                blackWatermarkBtn.classList.remove('active');
+            }
+            
+            updateWatermarkHint();
+            renderLivePreview();
+        });
+
+        blackWatermarkUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            blackWatermarkUpload.classList.add('dragover');
+        });
+
+        blackWatermarkUpload.addEventListener('dragleave', () => {
+            blackWatermarkUpload.classList.remove('dragover');
+        });
+
+        blackWatermarkUpload.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            blackWatermarkUpload.classList.remove('dragover');
+            
+            const file = e.dataTransfer.files[0];
+            if (!file || !file.type.startsWith('image/')) return;
+
+            const img = await loadImage(file);
+            if (img) {
+                watermarkImages.black = img;
+                blackWatermarkPreview.src = img.src;
+                blackWatermarkUpload.classList.add('has-image');
+            }
+            
+            updateWatermarkHint();
+            renderLivePreview();
+        });
+
+        async function loadImage(file) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => resolve(img);
+                img.onerror = () => resolve(null);
+                img.src = URL.createObjectURL(file);
+            });
+        }
+
+        function addPhotoPreview(file, img, index) {
+            const item = document.createElement('div');
+            item.className = 'preview-item';
+            item.innerHTML = `
+                <img src="${img.src}" alt="${file.name}">
+                <button class="remove-btn" data-index="${index}">×</button>
+            `;
+            photoPreview.appendChild(item);
+
+            item.querySelector('.remove-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                const idx = parseInt(e.target.dataset.index);
+                removePhoto(idx);
+            });
+        }
+
+        function removePhoto(index) {
+            photos.splice(index, 1);
+            photoPreview.innerHTML = '';
+            photos.forEach((photo, idx) => {
+                addPhotoPreview(photo.file, photo.image, idx);
+            });
+            renderLivePreview();
+        }
+
+        positionBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                positionBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedPosition = btn.dataset.position;
+                renderLivePreview();
+            });
+        });
+
+        watermarkSize.addEventListener('input', (e) => {
+            sizeValue.textContent = e.target.value + '%';
+            renderLivePreview();
+        });
+
+        offsetX.addEventListener('input', (e) => {
+            offsetXValue.textContent = e.target.value;
+            renderLivePreview();
+        });
+
+        offsetY.addEventListener('input', (e) => {
+            offsetYValue.textContent = e.target.value;
+            renderLivePreview();
+        });
+
+        clearPhotosBtn.addEventListener('click', () => {
+            photos = [];
+            photoPreview.innerHTML = '';
+            resultGrid.innerHTML = '';
+            results = [];
+            downloadAllBtn.style.display = 'none';
+            resultCount.textContent = '';
+            resultEmptyState.style.display = 'block';
+            livePreviewPanel.style.display = 'none';
+        });
+
+        addWatermarkBtn.addEventListener('click', async () => {
+            if (!watermarkImages.white && !watermarkImages.black) {
+                alert('请先上传水印图片');
+                return;
+            }
+            if (photos.length === 0) {
+                alert('请先上传照片');
+                return;
+            }
+
+            progressBar.style.display = 'block';
+            progress.style.width = '0%';
+            resultGrid.innerHTML = '';
+            downloadAllBtn.style.display = 'none';
+            resultEmptyState.style.display = 'none';
+
+            results = [];
+
+            for (let i = 0; i < photos.length; i++) {
+                const photo = photos[i];
+                let watermarkImg;
+                
+                if (autoSelectWatermark.checked) {
+                    watermarkImg = getWatermarkBasedOnBrightness(photo.image);
+                    if (!watermarkImg) {
+                        watermarkImg = watermarkImages.white || watermarkImages.black;
+                    }
+                } else {
+                    watermarkImg = watermarkImages[currentWatermarkType];
+                }
+                
+                if (!watermarkImg) continue;
+                
+                const result = await addWatermark(photo.image, watermarkImg);
+                results.push({
+                    originalName: photo.file.name,
+                    dataUrl: result,
+                    photoImage: photo.image,
+                    watermarkType: autoSelectWatermark.checked ? (getWatermarkBasedOnBrightness(photo.image) === watermarkImages.black ? 'black' : 'white') : currentWatermarkType
+                });
+
+                progress.style.width = ((i + 1) / photos.length * 100) + '%';
+            }
+
+            progressBar.style.display = 'none';
+            
+            if (results.length === 0) {
+                alert('没有可用的水印图片，请确保至少上传一张水印图片');
+                resultEmptyState.style.display = 'block';
+            } else {
+                displayResults();
+            }
+        });
+
+        function getWatermarkBasedOnBrightness(img) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 100;
+            canvas.height = 100;
+            ctx.drawImage(img, 0, 0, 100, 100);
+
+            const imageData = ctx.getImageData(0, 0, 100, 100);
+            const pixels = imageData.data;
+            let totalBrightness = 0;
+
+            for (let i = 0; i < pixels.length; i += 4) {
+                const r = pixels[i];
+                const g = pixels[i + 1];
+                const b = pixels[i + 2];
+                const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                totalBrightness += brightness;
+            }
+
+            const avgBrightness = totalBrightness / (pixels.length / 4);
+            return avgBrightness > 128 ? watermarkImages.black : watermarkImages.white;
+        }
+
+        function calculatePosition(photoWidth, photoHeight, watermarkWidth, watermarkHeight) {
+            const padding = photoWidth * 0.01;
+            const offsetXPixels = parseInt(offsetX.value) * (photoWidth * 0.005);
+            const offsetYPixels = (parseInt(offsetY.value) + 1) * (photoHeight * 0.005);
+            let x, y;
+
+            switch (selectedPosition) {
+                case 'top-left':
+                    x = padding + offsetXPixels;
+                    y = padding + offsetYPixels;
+                    break;
+                case 'top-center':
+                    x = (photoWidth - watermarkWidth) / 2 + offsetXPixels;
+                    y = padding + offsetYPixels;
+                    break;
+                case 'top-right':
+                    x = photoWidth - watermarkWidth - padding + offsetXPixels;
+                    y = padding + offsetYPixels;
+                    break;
+                case 'middle-left':
+                    x = padding + offsetXPixels;
+                    y = (photoHeight - watermarkHeight) / 2 + offsetYPixels;
+                    break;
+                case 'center':
+                    x = (photoWidth - watermarkWidth) / 2 + offsetXPixels;
+                    y = (photoHeight - watermarkHeight) / 2 + offsetYPixels;
+                    break;
+                case 'middle-right':
+                    x = photoWidth - watermarkWidth - padding + offsetXPixels;
+                    y = (photoHeight - watermarkHeight) / 2 + offsetYPixels;
+                    break;
+                case 'bottom-left':
+                    x = padding + offsetXPixels;
+                    y = photoHeight - watermarkHeight - padding + offsetYPixels;
+                    break;
+                case 'bottom-center':
+                    x = (photoWidth - watermarkWidth) / 2 + offsetXPixels;
+                    y = photoHeight - watermarkHeight - padding + offsetYPixels;
+                    break;
+                case 'bottom-right':
+                    x = photoWidth - watermarkWidth - padding + offsetXPixels;
+                    y = photoHeight - watermarkHeight - padding + offsetYPixels;
+                    break;
+            }
+
+            return { x, y };
+        }
+
+        async function addWatermark(photo, watermark) {
+            return new Promise((resolve) => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                canvas.width = photo.width;
+                canvas.height = photo.height;
+                
+                ctx.drawImage(photo, 0, 0);
+
+                const sizePercent = parseInt(watermarkSize.value) / 100;
+                const watermarkWidth = photo.width * sizePercent;
+                const watermarkHeight = (watermarkWidth / watermark.width) * watermark.height;
+
+                const { x, y } = calculatePosition(photo.width, photo.height, watermarkWidth, watermarkHeight);
+
+                ctx.drawImage(watermark, x, y, watermarkWidth, watermarkHeight);
+
+                canvas.toBlob((blob) => {
+                    resolve(URL.createObjectURL(blob));
+                }, 'image/jpeg', 1.0);
+            });
+        }
+
+        function renderLivePreview() {
+            if (photos.length === 0) {
+                livePreviewPanel.style.display = 'none';
+                return;
+            }
+
+            if (!watermarkImages.white && !watermarkImages.black) {
+                livePreviewPanel.style.display = 'none';
+                return;
+            }
+
+            const photo = photos[0].image;
+            let watermarkImg = autoSelectWatermark.checked 
+                ? getWatermarkBasedOnBrightness(photo)
+                : watermarkImages[currentWatermarkType];
+
+            if (!watermarkImg) {
+                watermarkImg = watermarkImages.white || watermarkImages.black;
+            }
+
+            if (!watermarkImg) {
+                livePreviewPanel.style.display = 'none';
+                return;
+            }
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            const previewWidth = 500;
+            const scale = previewWidth / photo.width;
+            const previewHeight = photo.height * scale;
+
+            canvas.width = previewWidth;
+            canvas.height = previewHeight;
+
+            ctx.drawImage(photo, 0, 0, previewWidth, previewHeight);
+
+            const sizePercent = parseInt(watermarkSize.value) / 100;
+            const watermarkWidth = previewWidth * sizePercent;
+            const watermarkHeight = (watermarkWidth / watermarkImg.width) * watermarkImg.height;
+
+            const { x, y } = calculatePosition(previewWidth, previewHeight, watermarkWidth, watermarkHeight);
+
+            ctx.drawImage(watermarkImg, x, y, watermarkWidth, watermarkHeight);
+
+            livePreviewImage.src = canvas.toDataURL('image/jpeg', 0.9);
+            livePreviewPanel.style.display = 'block';
+        }
+
+        async function toggleWatermarkColor(index) {
+            const result = results[index];
+            if (!result) return;
+
+            const newType = result.watermarkType === 'white' ? 'black' : 'white';
+            const watermarkImg = watermarkImages[newType];
+
+            if (!watermarkImg) {
+                alert(`请先上传${newType === 'white' ? '白色' : '黑色'}水印图片`);
+                return;
+            }
+
+            const newDataUrl = await addWatermark(result.photoImage, watermarkImg);
+            result.dataUrl = newDataUrl;
+            result.watermarkType = newType;
+
+            const resultItem = resultGrid.children[index];
+            if (resultItem) {
+                resultItem.querySelector('img').src = newDataUrl;
+            }
+        }
+
+        function displayResults() {
+            resultGrid.innerHTML = '';
+            
+            if (results.length === 0) {
+                resultEmptyState.style.display = 'block';
+                return;
+            }
+
+            resultEmptyState.style.display = 'none';
+            
+            results.forEach((result, index) => {
+                const item = document.createElement('div');
+                item.className = 'result-item';
+                item.innerHTML = `
+                    <img src="${result.dataUrl}" alt="${result.originalName}">
+                    <div class="actions">
+                        <button class="action-btn download-btn" data-index="${index}">
+                            📥 下载
+                        </button>
+                        <button class="action-btn color-btn" data-index="${index}">
+                            🔄 换色
+                        </button>
+                    </div>
+                `;
+                resultGrid.appendChild(item);
+
+                item.querySelector('.download-btn').addEventListener('click', () => {
+                    downloadImage(result.dataUrl, result.originalName);
+                });
+
+                item.querySelector('.color-btn').addEventListener('click', () => {
+                    toggleWatermarkColor(index);
+                });
+            });
+
+            resultCount.textContent = `共 ${results.length} 张`;
+            downloadAllBtn.style.display = 'block';
+        }
+
+        downloadAllBtn.addEventListener('click', () => {
+            let index = 0;
+            const downloadNext = () => {
+                if (index < results.length) {
+                    downloadImage(results[index].dataUrl, results[index].originalName);
+                    index++;
+                    setTimeout(downloadNext, 400);
+                }
+            };
+            downloadNext();
+        });
+
+        function downloadImage(dataUrl, originalName) {
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            const nameParts = originalName.split('.');
+            const ext = nameParts.pop();
+            const baseName = nameParts.join('.');
+            link.download = `${baseName}_watermark.${ext}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
+
+
