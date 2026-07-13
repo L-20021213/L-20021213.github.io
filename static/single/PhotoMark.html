@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -79,7 +78,6 @@
             cursor: pointer;
             transition: all 0.2s ease;
             position: relative;
-            overflow: hidden;
             background: #fafafa;
         }
 
@@ -241,11 +239,13 @@
             background: #e9ecef;
             outline: none;
             -webkit-appearance: none;
+            appearance: none;
             cursor: pointer;
         }
 
         .form-group input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
+            appearance: none;
             width: 18px;
             height: 18px;
             border-radius: 50%;
@@ -291,6 +291,24 @@
             font-weight: 500;
             border-bottom: 1px solid #e9ecef;
             color: #444;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .zoom-btn {
+            padding: 4px 8px;
+            font-size: 0.85rem;
+            border: none;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.15s;
+        }
+
+        .zoom-btn:hover {
+            opacity: 1;
         }
 
         .live-preview-container {
@@ -308,6 +326,134 @@
             border-radius: 8px;
             object-fit: contain;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+        }
+
+        .fullscreen-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fullscreen-modal.hidden {
+            display: none;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            z-index: 1001;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .close-modal-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .close-modal-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+        }
+
+        .zoom-control-btn {
+            width: 32px;
+            height: 32px;
+            font-size: 1rem;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .zoom-control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .zoom-level {
+            color: #fff;
+            font-size: 0.9rem;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .fullscreen-image-container {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .fullscreen-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            cursor: grab;
+            transform-origin: center center;
+            user-select: none;
+        }
+
+        .fullscreen-image.dragging {
+            cursor: grabbing;
+        }
+
+        .zoom-hint {
+            margin-top: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
         }
 
         .position-btn {
@@ -375,6 +521,13 @@
             background: #e2e8f0;
         }
 
+        .reset-btn {
+            width: 100%;
+            margin-top: 16px;
+            padding: 12px;
+            font-size: 0.9rem;
+        }
+
         .btn-group {
             display: flex;
             gap: 12px;
@@ -437,6 +590,7 @@
             height: 100%;
             max-height: 200px;
             object-fit: contain;
+            cursor: pointer;
         }
 
         .result-item .actions {
@@ -492,7 +646,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-top: 16px;
+            margin-bottom: 20px;
             padding: 12px 16px;
             background: #fafafa;
             border-radius: 8px;
@@ -517,6 +671,7 @@
             display: flex;
             gap: 10px;
             margin-top: 16px;
+            margin-bottom: 20px;
         }
 
         .watermark-type-btn {
@@ -567,6 +722,34 @@
         .watermark-type-btn span {
             font-size: 0.85rem;
             font-weight: 500;
+        }
+
+        .watermark-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .clear-watermark-btn {
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            border-radius: 6px;
+            background: #fff5f5;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .clear-watermark-btn:hover {
+            background: #fee2e2;
+            border-color: #f87171;
+        }
+
+        .clear-watermark-btn.hidden {
+            display: none;
         }
 
         .watermark-upload-section {
@@ -667,11 +850,15 @@
                             <input type="file" id="blackWatermarkFile" accept="image/*">
                         </div>
                     </div>
+                    <div class="watermark-actions">
+                        <button class="clear-watermark-btn hidden" id="clearWhiteWatermark">⬜ ✕ 清除白色水印</button>
+                        <button class="clear-watermark-btn hidden" id="clearBlackWatermark">⬛ ✕ 清除黑色水印</button>
+                    </div>
                     <div class="watermark-hint" id="watermarkHint">请分别上传白色和黑色水印图片</div>
                 </div>
 
                 <div class="watermark-type-selector">
-                    <button class="watermark-type-btn" id="whiteWatermarkBtn">
+                    <button class="watermark-type-btn active" id="whiteWatermarkBtn">
                         <div class="swatch white"></div>
                         <span>白色水印</span>
                     </button>
@@ -699,6 +886,11 @@
                 <div class="form-group">
                     <label>垂直偏移: <span class="range-value" id="offsetYValue">0</span></label>
                     <input type="range" id="offsetY" min="-50" max="50" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label>水印透明度: <span class="range-value" id="opacityValue">100%</span></label>
+                    <input type="range" id="watermarkOpacity" min="10" max="100" value="100">
                 </div>
 
                 <div class="form-group">
@@ -743,8 +935,13 @@
                     </div>
                 </div>
 
+                <button class="btn btn-secondary reset-btn" id="resetBtn">↺ 恢复默认设置</button>
+
                 <div class="live-preview-panel" id="livePreviewPanel">
-                    <div class="preview-title">🎯 实时预览</div>
+                    <div class="preview-title">
+                        <span>🎯 实时预览</span>
+                        <button class="zoom-btn" id="zoomBtn" title="全屏查看">🔍</button>
+                    </div>
                     <div class="live-preview-container">
                         <img id="livePreviewImage" class="live-preview-image" src="" alt="实时预览">
                     </div>
@@ -777,6 +974,23 @@
             </div>
         </div>
 
+        <div class="fullscreen-modal hidden" id="fullscreenModal">
+            <div class="modal-overlay" id="modalOverlay"></div>
+            <div class="modal-content">
+                <button class="close-modal-btn" id="closeModalBtn">✕</button>
+                <div class="zoom-controls">
+                    <button class="zoom-control-btn" id="zoomInBtn">➕</button>
+                    <span class="zoom-level" id="zoomLevel">100%</span>
+                    <button class="zoom-control-btn" id="zoomOutBtn">➖</button>
+                    <button class="zoom-control-btn" id="zoomResetBtn">↺</button>
+                </div>
+                <div class="fullscreen-image-container" id="fullscreenContainer">
+                    <img id="fullscreenImage" class="fullscreen-image" src="" alt="全屏预览">
+                </div>
+                <div class="zoom-hint">滚轮缩放 · 拖拽移动 · 双击重置</div>
+            </div>
+        </div>
+
         <div class="result-panel">
             <div class="panel-title">
                 <span>✨</span>
@@ -802,6 +1016,8 @@
         const blackWatermarkPreview = document.getElementById('blackWatermarkPreview');
         const whiteWatermarkUpload = document.getElementById('whiteWatermarkUpload');
         const blackWatermarkUpload = document.getElementById('blackWatermarkUpload');
+        const clearWhiteWatermark = document.getElementById('clearWhiteWatermark');
+        const clearBlackWatermark = document.getElementById('clearBlackWatermark');
         const watermarkHint = document.getElementById('watermarkHint');
         const photoFilesInput = document.getElementById('photoFiles');
         const photoPreview = document.getElementById('photoPreview');
@@ -813,6 +1029,9 @@
         const offsetXValue = document.getElementById('offsetXValue');
         const offsetY = document.getElementById('offsetY');
         const offsetYValue = document.getElementById('offsetYValue');
+        const watermarkOpacity = document.getElementById('watermarkOpacity');
+        const opacityValue = document.getElementById('opacityValue');
+        const resetBtn = document.getElementById('resetBtn');
         const addWatermarkBtn = document.getElementById('addWatermarkBtn');
         const clearPhotosBtn = document.getElementById('clearPhotosBtn');
         const resultGrid = document.getElementById('resultGrid');
@@ -824,8 +1043,27 @@
         const whiteWatermarkBtn = document.getElementById('whiteWatermarkBtn');
         const blackWatermarkBtn = document.getElementById('blackWatermarkBtn');
         const autoSelectWatermark = document.getElementById('autoSelectWatermark');
+        const zoomBtn = document.getElementById('zoomBtn');
+        const fullscreenModal = document.getElementById('fullscreenModal');
+        const fullscreenImage = document.getElementById('fullscreenImage');
+        const fullscreenContainer = document.getElementById('fullscreenContainer');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const zoomInBtn = document.getElementById('zoomInBtn');
+        const zoomOutBtn = document.getElementById('zoomOutBtn');
+        const zoomResetBtn = document.getElementById('zoomResetBtn');
+        const zoomLevel = document.getElementById('zoomLevel');
         const livePreviewPanel = document.getElementById('livePreviewPanel');
         const livePreviewImage = document.getElementById('livePreviewImage');
+        
+        let zoomScale = 1;
+        let translateX = 0;
+        let translateY = 0;
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let startTranslateX = 0;
+        let startTranslateY = 0;
 
         let watermarkImages = {
             white: null,
@@ -840,14 +1078,21 @@
             const file = e.target.files[0];
             if (!file) return;
             
-            const img = await loadImage(file);
-            if (img) {
-                watermarkImages.white = img;
-                whiteWatermarkPreview.src = img.src;
+            const result = await loadImage(file);
+            if (result) {
+                if (watermarkImages.white && watermarkImages.white.objectUrl) {
+                    URL.revokeObjectURL(watermarkImages.white.objectUrl);
+                }
+                watermarkImages.white = { img: result.img, objectUrl: result.objectUrl };
+                whiteWatermarkPreview.src = result.img.src;
                 whiteWatermarkUpload.classList.add('has-image');
-                whiteWatermarkBtn.classList.add('active');
-                currentWatermarkType = 'white';
-                blackWatermarkBtn.classList.remove('active');
+                clearWhiteWatermark.classList.remove('hidden');
+                
+                if (!watermarkImages.black) {
+                    currentWatermarkType = 'white';
+                    whiteWatermarkBtn.classList.add('active');
+                    blackWatermarkBtn.classList.remove('active');
+                }
             }
             
             updateWatermarkHint();
@@ -858,11 +1103,21 @@
             const file = e.target.files[0];
             if (!file) return;
             
-            const img = await loadImage(file);
-            if (img) {
-                watermarkImages.black = img;
-                blackWatermarkPreview.src = img.src;
+            const result = await loadImage(file);
+            if (result) {
+                if (watermarkImages.black && watermarkImages.black.objectUrl) {
+                    URL.revokeObjectURL(watermarkImages.black.objectUrl);
+                }
+                watermarkImages.black = { img: result.img, objectUrl: result.objectUrl };
+                blackWatermarkPreview.src = result.img.src;
                 blackWatermarkUpload.classList.add('has-image');
+                clearBlackWatermark.classList.remove('hidden');
+                
+                if (!watermarkImages.white && currentWatermarkType === 'white') {
+                    currentWatermarkType = 'black';
+                    blackWatermarkBtn.classList.add('active');
+                    whiteWatermarkBtn.classList.remove('active');
+                }
             }
             
             updateWatermarkHint();
@@ -903,6 +1158,137 @@
             renderLivePreview();
         });
 
+        function updateZoomTransform() {
+            fullscreenImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${zoomScale})`;
+            zoomLevel.textContent = Math.round(zoomScale * 100) + '%';
+        }
+
+        function resetZoom() {
+            zoomScale = 1;
+            translateX = 0;
+            translateY = 0;
+            updateZoomTransform();
+        }
+
+        zoomBtn.addEventListener('click', () => {
+            if (livePreviewImage.src) {
+                fullscreenImage.src = livePreviewImage.src;
+                resetZoom();
+                fullscreenModal.classList.remove('hidden');
+            }
+        });
+
+        livePreviewImage.addEventListener('click', () => {
+            if (livePreviewImage.src) {
+                fullscreenImage.src = livePreviewImage.src;
+                resetZoom();
+                fullscreenModal.classList.remove('hidden');
+            }
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            fullscreenModal.classList.add('hidden');
+        });
+
+        modalOverlay.addEventListener('click', () => {
+            fullscreenModal.classList.add('hidden');
+        });
+
+        zoomInBtn.addEventListener('click', () => {
+            zoomScale = Math.min(zoomScale + 0.25, 5);
+            updateZoomTransform();
+        });
+
+        zoomOutBtn.addEventListener('click', () => {
+            zoomScale = Math.max(zoomScale - 0.25, 0.25);
+            updateZoomTransform();
+        });
+
+        zoomResetBtn.addEventListener('click', () => {
+            resetZoom();
+        });
+
+        fullscreenImage.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.1 : 0.1;
+            zoomScale = Math.max(0.25, Math.min(zoomScale + delta, 5));
+            updateZoomTransform();
+        }, { passive: false });
+
+        fullscreenImage.addEventListener('mousedown', (e) => {
+            if (zoomScale <= 1) return;
+            isDragging = true;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            startTranslateX = translateX;
+            startTranslateY = translateY;
+            fullscreenImage.classList.add('dragging');
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            translateX = startTranslateX + (e.clientX - dragStartX);
+            translateY = startTranslateY + (e.clientY - dragStartY);
+            updateZoomTransform();
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            fullscreenImage.classList.remove('dragging');
+        });
+
+        fullscreenImage.addEventListener('dblclick', () => {
+            resetZoom();
+        });
+
+        clearWhiteWatermark.addEventListener('click', () => {
+            if (watermarkImages.white && watermarkImages.white.objectUrl) {
+                URL.revokeObjectURL(watermarkImages.white.objectUrl);
+            }
+            watermarkImages.white = null;
+            whiteWatermarkPreview.src = '';
+            whiteWatermarkUpload.classList.remove('has-image');
+            clearWhiteWatermark.classList.add('hidden');
+            whiteWatermarkBtn.classList.remove('active');
+            whiteWatermarkFileInput.value = '';
+            
+            if (currentWatermarkType === 'white') {
+                if (watermarkImages.black) {
+                    currentWatermarkType = 'black';
+                    blackWatermarkBtn.classList.add('active');
+                } else {
+                    currentWatermarkType = null;
+                }
+            }
+            
+            updateWatermarkHint();
+            renderLivePreview();
+        });
+
+        clearBlackWatermark.addEventListener('click', () => {
+            if (watermarkImages.black && watermarkImages.black.objectUrl) {
+                URL.revokeObjectURL(watermarkImages.black.objectUrl);
+            }
+            watermarkImages.black = null;
+            blackWatermarkPreview.src = '';
+            blackWatermarkUpload.classList.remove('has-image');
+            clearBlackWatermark.classList.add('hidden');
+            blackWatermarkBtn.classList.remove('active');
+            blackWatermarkFileInput.value = '';
+            
+            if (currentWatermarkType === 'black') {
+                if (watermarkImages.white) {
+                    currentWatermarkType = 'white';
+                    whiteWatermarkBtn.classList.add('active');
+                } else {
+                    currentWatermarkType = null;
+                }
+            }
+            
+            updateWatermarkHint();
+            renderLivePreview();
+        });
+
         function updateWatermarkHint() {
             const count = Object.values(watermarkImages).filter(Boolean).length;
             if (count === 0) {
@@ -919,13 +1305,14 @@
             if (files.length === 0) return;
 
             for (const file of files) {
-                const img = await loadImage(file);
-                if (img) {
+                const result = await loadImage(file);
+                if (result) {
                     photos.push({
                         file: file,
-                        image: img
+                        image: result.img,
+                        objectUrl: result.objectUrl
                     });
-                    addPhotoPreview(file, img, photos.length - 1);
+                    addPhotoPreview(file, result.img, photos.length - 1);
                 }
             }
 
@@ -950,13 +1337,14 @@
 
             for (const file of files) {
                 if (!file.type.startsWith('image/')) continue;
-                const img = await loadImage(file);
-                if (img) {
+                const result = await loadImage(file);
+                if (result) {
                     photos.push({
                         file: file,
-                        image: img
+                        image: result.img,
+                        objectUrl: result.objectUrl
                     });
-                    addPhotoPreview(file, img, photos.length - 1);
+                    addPhotoPreview(file, result.img, photos.length - 1);
                 }
             }
 
@@ -979,14 +1367,18 @@
             const file = e.dataTransfer.files[0];
             if (!file || !file.type.startsWith('image/')) return;
 
-            const img = await loadImage(file);
-            if (img) {
-                watermarkImages.white = img;
-                whiteWatermarkPreview.src = img.src;
+            const result = await loadImage(file);
+            if (result) {
+                if (watermarkImages.white && watermarkImages.white.objectUrl) {
+                    URL.revokeObjectURL(watermarkImages.white.objectUrl);
+                }
+                watermarkImages.white = { img: result.img, objectUrl: result.objectUrl };
+                whiteWatermarkPreview.src = result.img.src;
                 whiteWatermarkUpload.classList.add('has-image');
                 whiteWatermarkBtn.classList.add('active');
                 currentWatermarkType = 'white';
                 blackWatermarkBtn.classList.remove('active');
+                clearWhiteWatermark.classList.remove('hidden');
             }
             
             updateWatermarkHint();
@@ -1009,11 +1401,21 @@
             const file = e.dataTransfer.files[0];
             if (!file || !file.type.startsWith('image/')) return;
 
-            const img = await loadImage(file);
-            if (img) {
-                watermarkImages.black = img;
-                blackWatermarkPreview.src = img.src;
+            const result = await loadImage(file);
+            if (result) {
+                if (watermarkImages.black && watermarkImages.black.objectUrl) {
+                    URL.revokeObjectURL(watermarkImages.black.objectUrl);
+                }
+                watermarkImages.black = { img: result.img, objectUrl: result.objectUrl };
+                blackWatermarkPreview.src = result.img.src;
                 blackWatermarkUpload.classList.add('has-image');
+                clearBlackWatermark.classList.remove('hidden');
+                
+                if (!watermarkImages.white && currentWatermarkType === 'white') {
+                    currentWatermarkType = 'black';
+                    blackWatermarkBtn.classList.add('active');
+                    whiteWatermarkBtn.classList.remove('active');
+                }
             }
             
             updateWatermarkHint();
@@ -1023,10 +1425,14 @@
         async function loadImage(file) {
             return new Promise((resolve) => {
                 const img = new Image();
+                const objectUrl = URL.createObjectURL(file);
                 img.crossOrigin = 'anonymous';
-                img.onload = () => resolve(img);
-                img.onerror = () => resolve(null);
-                img.src = URL.createObjectURL(file);
+                img.onload = () => resolve({ img, objectUrl });
+                img.onerror = () => {
+                    URL.revokeObjectURL(objectUrl);
+                    resolve(null);
+                };
+                img.src = objectUrl;
             });
         }
 
@@ -1047,6 +1453,10 @@
         }
 
         function removePhoto(index) {
+            const removedPhoto = photos[index];
+            if (removedPhoto && removedPhoto.objectUrl) {
+                URL.revokeObjectURL(removedPhoto.objectUrl);
+            }
             photos.splice(index, 1);
             photoPreview.innerHTML = '';
             photos.forEach((photo, idx) => {
@@ -1079,10 +1489,41 @@
             renderLivePreview();
         });
 
+        watermarkOpacity.addEventListener('input', (e) => {
+            opacityValue.textContent = e.target.value + '%';
+            renderLivePreview();
+        });
+
+        resetBtn.addEventListener('click', () => {
+            watermarkSize.value = 20;
+            sizeValue.textContent = '20%';
+            offsetX.value = 0;
+            offsetXValue.textContent = '0';
+            offsetY.value = 0;
+            offsetYValue.textContent = '0';
+            watermarkOpacity.value = 100;
+            opacityValue.textContent = '100%';
+            
+            positionBtns.forEach(btn => btn.classList.remove('active'));
+            const defaultPositionBtn = document.querySelector('.position-btn[data-position="bottom-center"]');
+            if (defaultPositionBtn) {
+                defaultPositionBtn.classList.add('active');
+                selectedPosition = 'bottom-center';
+            }
+            
+            renderLivePreview();
+        });
+
         clearPhotosBtn.addEventListener('click', () => {
+            photos.forEach(photo => {
+                if (photo.objectUrl) URL.revokeObjectURL(photo.objectUrl);
+            });
             photos = [];
             photoPreview.innerHTML = '';
             resultGrid.innerHTML = '';
+            results.forEach(r => {
+                if (r.url) URL.revokeObjectURL(r.url);
+            });
             results = [];
             downloadAllBtn.style.display = 'none';
             resultCount.textContent = '';
@@ -1106,6 +1547,9 @@
             downloadAllBtn.style.display = 'none';
             resultEmptyState.style.display = 'none';
 
+            results.forEach(r => {
+                if (r.url) URL.revokeObjectURL(r.url);
+            });
             results = [];
 
             for (let i = 0; i < photos.length; i++) {
@@ -1115,21 +1559,36 @@
                 if (autoSelectWatermark.checked) {
                     watermarkImg = getWatermarkBasedOnBrightness(photo.image);
                     if (!watermarkImg) {
-                        watermarkImg = watermarkImages.white || watermarkImages.black;
+                        watermarkImg = watermarkImages.white ? watermarkImages.white.img : 
+                                      (watermarkImages.black ? watermarkImages.black.img : null);
                     }
                 } else {
-                    watermarkImg = watermarkImages[currentWatermarkType];
+                    const watermarkObj = watermarkImages[currentWatermarkType];
+                    if (watermarkObj) {
+                        watermarkImg = watermarkObj.img;
+                    } else {
+                        watermarkImg = watermarkImages.white ? watermarkImages.white.img : 
+                                      (watermarkImages.black ? watermarkImages.black.img : null);
+                    }
                 }
                 
                 if (!watermarkImg) continue;
                 
-                const result = await addWatermark(photo.image, watermarkImg);
-                results.push({
-                    originalName: photo.file.name,
-                    dataUrl: result,
-                    photoImage: photo.image,
-                    watermarkType: autoSelectWatermark.checked ? (getWatermarkBasedOnBrightness(photo.image) === watermarkImages.black ? 'black' : 'white') : currentWatermarkType
-                });
+                try {
+                    const result = await addWatermark(photo.image, watermarkImg, 'image/png');
+                    const actualWatermarkType = watermarkImg === (watermarkImages.black?.img || null) ? 'black' : 'white';
+                    results.push({
+                        originalName: photo.file.name,
+                        dataUrl: result.url,
+                        url: result.url,
+                        blob: result.blob,
+                        mimeType: result.mimeType,
+                        photoImage: photo.image,
+                        watermarkType: actualWatermarkType
+                    });
+                } catch (e) {
+                    console.error('Failed to add watermark:', e);
+                }
 
                 progress.style.width = ((i + 1) / photos.length * 100) + '%';
             }
@@ -1164,7 +1623,9 @@
             }
 
             const avgBrightness = totalBrightness / (pixels.length / 4);
-            return avgBrightness > 128 ? watermarkImages.black : watermarkImages.white;
+            return avgBrightness > 128 
+                ? (watermarkImages.black ? watermarkImages.black.img : null) 
+                : (watermarkImages.white ? watermarkImages.white.img : null);
         }
 
         function calculatePosition(photoWidth, photoHeight, watermarkWidth, watermarkHeight) {
@@ -1215,14 +1676,16 @@
             return { x, y };
         }
 
-        async function addWatermark(photo, watermark) {
-            return new Promise((resolve) => {
+        async function addWatermark(photo, watermark, mimeType = 'image/png') {
+            return new Promise((resolve, reject) => {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 
                 canvas.width = photo.width;
                 canvas.height = photo.height;
                 
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(photo, 0, 0);
 
                 const sizePercent = parseInt(watermarkSize.value) / 100;
@@ -1231,11 +1694,23 @@
 
                 const { x, y } = calculatePosition(photo.width, photo.height, watermarkWidth, watermarkHeight);
 
+                const opacity = parseInt(watermarkOpacity.value) / 100;
+                ctx.globalAlpha = opacity;
+                ctx.imageSmoothingEnabled = false;
                 ctx.drawImage(watermark, x, y, watermarkWidth, watermarkHeight);
+                ctx.globalAlpha = 1;
 
                 canvas.toBlob((blob) => {
-                    resolve(URL.createObjectURL(blob));
-                }, 'image/jpeg', 1.0);
+                    if (blob) {
+                        resolve({
+                            blob: blob,
+                            url: URL.createObjectURL(blob),
+                            mimeType: mimeType
+                        });
+                    } else {
+                        reject(new Error('Failed to create image blob'));
+                    }
+                }, mimeType, mimeType === 'image/jpeg' ? 1.0 : undefined);
             });
         }
 
@@ -1253,10 +1728,11 @@
             const photo = photos[0].image;
             let watermarkImg = autoSelectWatermark.checked 
                 ? getWatermarkBasedOnBrightness(photo)
-                : watermarkImages[currentWatermarkType];
+                : (watermarkImages[currentWatermarkType] ? watermarkImages[currentWatermarkType].img : null);
 
             if (!watermarkImg) {
-                watermarkImg = watermarkImages.white || watermarkImages.black;
+                watermarkImg = watermarkImages.white ? watermarkImages.white.img : 
+                              (watermarkImages.black ? watermarkImages.black.img : null);
             }
 
             if (!watermarkImg) {
@@ -1267,13 +1743,16 @@
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
 
-            const previewWidth = 500;
+            const previewWidth = 800;
             const scale = previewWidth / photo.width;
             const previewHeight = photo.height * scale;
 
             canvas.width = previewWidth;
             canvas.height = previewHeight;
 
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            
             ctx.drawImage(photo, 0, 0, previewWidth, previewHeight);
 
             const sizePercent = parseInt(watermarkSize.value) / 100;
@@ -1282,9 +1761,13 @@
 
             const { x, y } = calculatePosition(previewWidth, previewHeight, watermarkWidth, watermarkHeight);
 
+            const opacity = parseInt(watermarkOpacity.value) / 100;
+            ctx.globalAlpha = opacity;
+            ctx.imageSmoothingEnabled = false;
             ctx.drawImage(watermarkImg, x, y, watermarkWidth, watermarkHeight);
+            ctx.globalAlpha = 1;
 
-            livePreviewImage.src = canvas.toDataURL('image/jpeg', 0.9);
+            livePreviewImage.src = canvas.toDataURL('image/png');
             livePreviewPanel.style.display = 'block';
         }
 
@@ -1300,13 +1783,21 @@
                 return;
             }
 
-            const newDataUrl = await addWatermark(result.photoImage, watermarkImg);
-            result.dataUrl = newDataUrl;
-            result.watermarkType = newType;
+            try {
+                const newResult = await addWatermark(result.photoImage, watermarkImg, result.mimeType);
+                if (result.url) URL.revokeObjectURL(result.url);
+                result.dataUrl = newResult.url;
+                result.url = newResult.url;
+                result.blob = newResult.blob;
+                result.watermarkType = newType;
 
-            const resultItem = resultGrid.children[index];
-            if (resultItem) {
-                resultItem.querySelector('img').src = newDataUrl;
+                const resultItem = resultGrid.children[index];
+                if (resultItem) {
+                    resultItem.querySelector('img').src = newResult.url;
+                }
+            } catch (e) {
+                console.error('Failed to toggle watermark color:', e);
+                alert('换色失败，请重试');
             }
         }
 
@@ -1337,11 +1828,17 @@
                 resultGrid.appendChild(item);
 
                 item.querySelector('.download-btn').addEventListener('click', () => {
-                    downloadImage(result.dataUrl, result.originalName);
+                    downloadImage(result.dataUrl, result.originalName, result.mimeType);
                 });
 
                 item.querySelector('.color-btn').addEventListener('click', () => {
                     toggleWatermarkColor(index);
+                });
+
+                item.querySelector('img').addEventListener('click', () => {
+                    fullscreenImage.src = result.dataUrl;
+                    resetZoom();
+                    fullscreenModal.classList.remove('hidden');
                 });
             });
 
@@ -1353,7 +1850,7 @@
             let index = 0;
             const downloadNext = () => {
                 if (index < results.length) {
-                    downloadImage(results[index].dataUrl, results[index].originalName);
+                    downloadImage(results[index].dataUrl, results[index].originalName, results[index].mimeType);
                     index++;
                     setTimeout(downloadNext, 400);
                 }
@@ -1361,12 +1858,16 @@
             downloadNext();
         });
 
-        function downloadImage(dataUrl, originalName) {
+        function downloadImage(dataUrl, originalName, mimeType) {
             const link = document.createElement('a');
             link.href = dataUrl;
             const nameParts = originalName.split('.');
-            const ext = nameParts.pop();
+            nameParts.pop();
             const baseName = nameParts.join('.');
+            
+            const ext = mimeType === 'image/png' ? 'png' : 
+                        mimeType === 'image/jpeg' ? 'jpg' : 
+                        mimeType === 'image/webp' ? 'webp' : 'png';
             link.download = `${baseName}_watermark.${ext}`;
             document.body.appendChild(link);
             link.click();
@@ -1375,5 +1876,4 @@
     </script>
 </body>
 </html>
-
 
