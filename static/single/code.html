@@ -1,0 +1,498 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线代码编辑器</title>
+    <link rel="icon" type="image/ico" href="https://cdn.jsdelivr.net/npm/picture-sianx@1.1.2/img/6945257127.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        success: '#52C41A',
+                        error: '#F5222D',
+                        warning: '#FAAD14',
+                        dark: '#1D2129',
+                        light: '#F2F3F5',
+                        editor: '#F7F8FA'
+                    },
+                    fontFamily: {
+                        code: ['Consolas', 'Monaco', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .editor-shadow {
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            }
+            .tab-active {
+                @apply bg-white border-b-2 border-primary text-primary;
+            }
+            .console-entry {
+                @apply py-1 px-3 text-sm border-b border-gray-800;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-dark min-h-screen flex flex-col">
+    <!-- 顶部工具栏 -->
+    <header class="bg-white border-b border-gray-200 py-3 px-4 shadow-sm">
+        <div class="container mx-auto flex flex-wrap justify-between items-center gap-3">
+            <h1 class="text-xl font-bold text-primary flex items-center">
+                <i class="fa fa-code mr-2"></i>在线代码编辑器
+            </h1>
+            <div class="flex gap-2 flex-wrap">
+                <div class="flex items-center bg-gray-100 px-3 py-2 rounded-md">
+                    <label class="relative inline-flex items-center cursor-pointer mr-2">
+                        <input type="checkbox" id="realtime-preview" class="sr-only peer" checked>
+                        <div class="w-9 h-5 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                    <span class="text-sm">实时预览</span>
+                </div>
+                <button id="run-btn" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-md flex items-center transition-all">
+                    <i class="fa fa-play mr-1"></i> 运行
+                </button>
+                <button id="clear-btn" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-md flex items-center transition-all">
+                    <i class="fa fa-eraser mr-1"></i> 清空代码
+                </button>
+                <button id="toggle-console" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-md flex items-center transition-all">
+                    <i class="fa fa-terminal mr-1"></i> 控制台
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="container mx-auto p-4 md:p-6 flex-1 flex flex-col lg:flex-row gap-6">
+        <!-- 代码编辑区 -->
+        <div class="w-full lg:w-1/2 flex flex-col h-[60vh]">
+            <!-- 代码标签页 -->
+            <div class="flex border-b border-gray-200 bg-gray-100">
+                <button class="tab-btn tab-active px-4 py-2 font-medium text-sm" data-target="html-editor">HTML</button>
+                <button class="tab-btn px-4 py-2 font-medium text-sm text-gray-600 hover:text-gray-900" data-target="css-editor">CSS</button>
+                <button class="tab-btn px-4 py-2 font-medium text-sm text-gray-600 hover:text-gray-900" data-target="js-editor">JavaScript</button>
+            </div>
+            
+            <!-- 编辑器容器 -->
+            <div class="flex-1 bg-white border border-gray-200 border-t-0 rounded-b-md overflow-hidden">
+                <div id="html-editor" class="editor-pane h-full flex flex-col">
+                    <textarea id="html-code" class="flex-1 w-full p-4 font-code text-sm focus:outline-none resize-none" placeholder="输入HTML代码..."></textarea>
+                </div>
+                <div id="css-editor" class="editor-pane h-full flex flex-col hidden">
+                    <textarea id="css-code" class="flex-1 w-full p-4 font-code text-sm focus:outline-none resize-none" placeholder="输入CSS代码..."></textarea>
+                </div>
+                <div id="js-editor" class="editor-pane h-full flex flex-col hidden">
+                    <textarea id="js-code" class="flex-1 w-full p-4 font-code text-sm focus:outline-none resize-none" placeholder="输入JavaScript代码..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- 预览和控制台区 -->
+        <div class="w-full lg:w-1/2 flex flex-col h-[60vh]">
+            <!-- 预览区 -->
+            <div class="flex-1 flex flex-col">
+                <div class="bg-gray-100 border border-gray-200 border-b-0 px-4 py-2 font-medium text-sm rounded-t-md flex justify-between items-center">
+                    <div class="flex items-center">
+                        <i class="fa fa-eye mr-1"></i> 预览效果
+                    </div>
+                    <div id="preview-status" class="text-xs text-gray-500">
+                        实时预览已开启
+                    </div>
+                </div>
+                <div class="flex-1 bg-white border border-gray-200 border-t-0 overflow-hidden relative">
+                    <iframe id="preview-frame" class="w-full h-full" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+                    <div id="preview-placeholder" class="absolute inset-0 flex items-center justify-center text-gray-400">
+                        <p>开始编辑代码查看效果</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 控制台 -->
+            <div id="console-container" class="h-48 border border-gray-200 bg-gray-50 mt-4 rounded-md overflow-hidden hidden">
+                <div class="bg-gray-700 text-white px-4 py-2 text-sm flex justify-between items-center">
+                    <div class="flex items-center">
+                        <i class="fa fa-terminal mr-2"></i> 控制台输出
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="clear-console" class="text-xs hover:text-gray-200">
+                            <i class="fa fa-trash-o"></i> 清空
+                        </button>
+                    </div>
+                </div>
+                <div id="console-output" class="font-code overflow-y-auto h-[calc(100%-32px)] bg-gray-900 text-gray-100 text-sm">
+                    <div class="console-entry text-gray-400">
+                        控制台已准备就绪
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部信息 -->
+    <footer class="mt-auto py-4 px-4 text-center text-gray-500 text-sm">
+        <p>实时预览功能会在您编辑代码时自动更新效果 | 控制台会显示代码运行日志和错误</p>
+    </footer>
+
+    <script>
+        // 状态变量
+        let consoleVisible = false;
+        let realtimeEnabled = true;
+        let isRunning = false;
+        
+        // 防抖函数 - 优化实时预览性能
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        // 标签页切换功能
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 移除所有活跃状态
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    b.classList.remove('tab-active');
+                    b.classList.add('text-gray-600', 'hover:text-gray-900');
+                });
+                
+                // 添加当前活跃状态
+                this.classList.add('tab-active');
+                this.classList.remove('text-gray-600', 'hover:text-gray-900');
+                
+                // 隐藏所有编辑器面板
+                document.querySelectorAll('.editor-pane').forEach(pane => {
+                    pane.classList.add('hidden');
+                });
+                
+                // 显示对应编辑器面板
+                const target = this.getAttribute('data-target');
+                document.getElementById(target).classList.remove('hidden');
+            });
+        });
+
+        // 切换控制台显示/隐藏
+        document.getElementById('toggle-console').addEventListener('click', function() {
+            const consoleContainer = document.getElementById('console-container');
+            consoleVisible = !consoleVisible;
+            
+            if (consoleVisible) {
+                consoleContainer.classList.remove('hidden');
+                this.classList.add('bg-primary/10', 'text-primary');
+                this.classList.remove('bg-gray-200', 'hover:bg-gray-300');
+            } else {
+                consoleContainer.classList.add('hidden');
+                this.classList.remove('bg-primary/10', 'text-primary');
+                this.classList.add('bg-gray-200', 'hover:bg-gray-300');
+            }
+        });
+
+        // 切换实时预览
+        document.getElementById('realtime-preview').addEventListener('change', function() {
+            realtimeEnabled = this.checked;
+            const statusEl = document.getElementById('preview-status');
+            
+            if (realtimeEnabled) {
+                statusEl.textContent = '实时预览已开启';
+                statusEl.classList.remove('text-warning');
+                // 立即更新一次预览
+                runCode();
+            } else {
+                statusEl.textContent = '实时预览已关闭 (点击"运行"更新)';
+                statusEl.classList.add('text-warning');
+            }
+        });
+
+        // 清空控制台
+        document.getElementById('clear-console').addEventListener('click', function() {
+            const consoleOutput = document.getElementById('console-output');
+            consoleOutput.innerHTML = '<div class="console-entry text-gray-400">控制台已清空</div>';
+        });
+
+        // 向控制台添加内容
+        function addToConsole(message, type = 'log') {
+            const consoleOutput = document.getElementById('console-output');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            let entryClass = 'console-entry';
+            let icon = '<i class="fa fa-info-circle mr-2"></i>';
+            
+            switch(type) {
+                case 'error':
+                    entryClass += ' text-error';
+                    icon = '<i class="fa fa-exclamation-circle mr-2"></i>';
+                    break;
+                case 'warn':
+                    entryClass += ' text-warning';
+                    icon = '<i class="fa fa-exclamation-triangle mr-2"></i>';
+                    break;
+                case 'success':
+                    entryClass += ' text-success';
+                    icon = '<i class="fa fa-check-circle mr-2"></i>';
+                    break;
+            }
+            
+            const entry = document.createElement('div');
+            entry.className = entryClass;
+            entry.innerHTML = `<span class="text-gray-500 mr-2">[${timestamp}]</span>${icon}${formatConsoleMessage(message)}`;
+            
+            consoleOutput.appendChild(entry);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight; // 自动滚动到底部
+        }
+
+        // 格式化控制台消息
+        function formatConsoleMessage(message) {
+            if (typeof message === 'object') {
+                return `<pre class="mt-1 ml-6 text-gray-300">${JSON.stringify(message, null, 2)}</pre>`;
+            }
+            return message;
+        }
+
+        // 运行代码功能
+        function runCode(manualTrigger = false) {
+            // 如果不是手动触发且实时预览关闭，则不执行
+            if (!manualTrigger && !realtimeEnabled) return;
+            
+            // 防止同时多次运行
+            if (isRunning) return;
+            isRunning = true;
+            
+            const html = document.getElementById('html-code').value;
+            const css = document.getElementById('css-code').value;
+            const js = document.getElementById('js-code').value;
+            
+            const frame = document.getElementById('preview-frame');
+            const placeholder = document.getElementById('preview-placeholder');
+            const frameDoc = frame.contentDocument || frame.contentWindow.document;
+            
+            // 隐藏占位符
+            placeholder.style.display = 'none';
+            
+            try {
+                // 构建完整HTML内容
+                const fullContent = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <style>${css}</style>
+                    </head>
+                    <body>
+                        ${html}
+                        <script>
+                            // 重写console方法，将输出发送到父窗口
+                            const originalConsole = { ...console };
+                            
+                            ['log', 'error', 'warn', 'info'].forEach(method => {
+                                console[method] = function(...args) {
+                                    originalConsole[method].apply(console, args);
+                                    window.parent.postMessage({
+                                        type: 'console',
+                                        method: method,
+                                        args: args.map(arg => {
+                                            // 简单序列化对象
+                                            try {
+                                                return typeof arg === 'object' ? JSON.stringify(arg) : arg;
+                                            } catch (e) {
+                                                return arg.toString();
+                                            }
+                                        })
+                                    }, '*');
+                                };
+                            });
+                            
+                            // 捕获全局错误
+                            window.addEventListener('error', function(e) {
+                                window.parent.postMessage({
+                                    type: 'error',
+                                    message: e.message,
+                                    filename: e.filename,
+                                    lineno: e.lineno,
+                                    colno: e.colno
+                                }, '*');
+                            });
+                            
+                            // 执行用户代码
+                            ${js}
+                        <\/script>
+                    </body>
+                    </html>
+                `;
+                
+                // 写入内容到iframe
+                frameDoc.open();
+                frameDoc.write(fullContent);
+                frameDoc.close();
+                
+                if (manualTrigger) {
+                    addToConsole('代码已手动运行', 'success');
+                }
+                
+            } catch (error) {
+                addToConsole(`代码执行错误: ${error.message}`, 'error');
+            } finally {
+                // 重置运行状态
+                isRunning = false;
+            }
+        }
+
+        // 绑定运行按钮
+        document.getElementById('run-btn').addEventListener('click', () => runCode(true));
+
+        // 监听来自iframe的消息
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'console') {
+                event.data.args.forEach(arg => {
+                    // 尝试解析JSON字符串
+                    try {
+                        const parsed = JSON.parse(arg);
+                        addToConsole(parsed, event.data.method);
+                    } catch (e) {
+                        addToConsole(arg, event.data.method);
+                    }
+                });
+            } else if (event.data.type === 'error') {
+                addToConsole(`运行时错误: ${event.data.message} (行: ${event.data.lineno}, 列: ${event.data.colno})`, 'error');
+            }
+        });
+
+        // 清空代码功能 - 修复版
+        document.getElementById('clear-btn').addEventListener('click', function() {
+            if (confirm('确定要清空所有代码吗？')) {
+                // 清空所有代码区
+                document.getElementById('html-code').value = '';
+                document.getElementById('css-code').value = '';
+                document.getElementById('js-code').value = '';
+                
+                // 重置预览区
+                const frame = document.getElementById('preview-frame');
+                const placeholder = document.getElementById('preview-placeholder');
+                const frameDoc = frame.contentDocument || frame.contentWindow.document;
+                
+                frameDoc.open();
+                frameDoc.write('');
+                frameDoc.close();
+                placeholder.style.display = 'flex';
+                
+                // 清空控制台
+                const consoleOutput = document.getElementById('console-output');
+                consoleOutput.innerHTML = '<div class="console-entry text-gray-400">控制台已准备就绪</div>';
+                
+                // 重置运行状态
+                isRunning = false;
+                
+                addToConsole('所有代码已清空', 'info');
+            }
+        });
+
+        // 设置实时预览 - 使用防抖处理避免频繁更新
+        const debouncedRunCode = debounce(() => runCode(), 300);
+        
+        // 监听代码变化
+        document.getElementById('html-code').addEventListener('input', debouncedRunCode);
+        document.getElementById('css-code').addEventListener('input', debouncedRunCode);
+        document.getElementById('js-code').addEventListener('input', debouncedRunCode);
+
+        // 示例代码初始化并运行
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('html-code').value = `<!DOCTYPE html>
+<html>
+<head>
+    <title>实时预览示例</title>
+</head>
+<body>
+    <h1 class="title">Hello, 实时编辑!</h1>
+    <p>尝试修改下面的代码，看看实时变化：</p>
+    <div class="counter">
+        <p>点击次数: <span id="count">0</span></p>
+        <button id="increment">增加</button>
+        <button id="decrement">减少</button>
+    </div>
+</body>
+</html>`;
+
+            document.getElementById('css-code').value = `.title {
+    color: #165DFF;
+    text-align: center;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.counter {
+    margin: 20px auto;
+    text-align: center;
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+}
+
+#count {
+    font-size: 24px;
+    font-weight: bold;
+    color: #F5222D;
+}
+
+button {
+    background-color: #36CFC9;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0 5px;
+}
+
+button:hover {
+    background-color: #165DFF;
+    color: white;
+}`;
+
+            document.getElementById('js-code').value = `// 计数器逻辑
+let count = 0;
+const countEl = document.getElementById('count');
+
+// 控制台输出初始信息
+console.log('计数器已初始化');
+console.log('当前计数:', count);
+
+// 增加按钮事件
+document.getElementById('increment').addEventListener('click', function() {
+    count++;
+    countEl.textContent = count;
+    console.log('计数增加到:', count);
+});
+
+// 减少按钮事件
+document.getElementById('decrement').addEventListener('click', function() {
+    count--;
+    countEl.textContent = count;
+    console.log('计数减少到:', count);
+    
+    // 负数时发出警告
+    if (count < 0) {
+        console.warn('计数已为负数!');
+    }
+});`;
+
+            // 初始运行一次
+            runCode();
+        });
+    </script>
+</body>
+</html>
+

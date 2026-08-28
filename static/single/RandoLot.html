@@ -1,0 +1,625 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随机抽签系统</title>
+    <link rel="icon" type="image/ico" href="https://cdn.jsdelivr.net/npm/picture-sianx@1.1.2/img/6945257127.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#FF7D00',
+                        neutral: '#F5F7FA',
+                        dark: '#1D2129',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 2s infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                },
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px -5px rgba(22, 93, 255, 0.1), 0 10px 10px -5px rgba(22, 93, 255, 0.04);
+            }
+
+            .name-selected {
+                animation: selected 0.5s ease-in-out;
+            }
+
+            @keyframes selected {
+                0% {
+                    transform: scale(1);
+                }
+
+                50% {
+                    transform: scale(1.1);
+                    box-shadow: 0 0 20px rgba(255, 125, 0, 0.6);
+                }
+
+                100% {
+                    transform: scale(1);
+                }
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen font-inter text-dark">
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 py-16">
+        <!-- 欢迎区域 -->
+        <section class="text-center mb-12 animate-fade-in">
+            <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] font-bold text-dark mb-4 text-shadow">
+                随机抽签，公平公正
+            </h2>
+            <p class="text-gray-600 max-w-2xl mx-auto text-[clamp(1rem,2vw,1.2rem)]">
+                上传您的Excel文件，选择抽签列，开始随机抽签。每个项目只能中签一次。
+            </p>
+        </section>
+
+        <!-- 文件上传区域 -->
+        <section id="upload-section" class="max-w-3xl mx-auto mb-16">
+            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 card-hover">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-file-excel text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">上传Excel文件</h3>
+                    <p class="text-gray-500">支持.xlsx和.xls格式，确保文件包含抽签列</p>
+                </div>
+
+                <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary transition-colors cursor-pointer"
+                    id="drop-area">
+                    <input type="file" id="file-input" accept=".xlsx,.xls" class="hidden">
+                    <button type="button" id="file-select-btn"
+                        class="bg-primary hover:bg-primary/90 text-white font-medium py-3 px-6 rounded-lg transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-upload mr-2"></i>选择文件
+                    </button>
+                    <p class="mt-4 text-gray-500">或者拖放文件到此处</p>
+                    <div class="mt-4 text-sm text-gray-400">
+                        <i class="fa-solid fa-info-circle mr-1"></i>最大文件大小: 10MB
+                    </div>
+                </div>
+
+                <div id="file-info" class="mt-6 hidden">
+                    <div class="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
+                        <div class="flex items-center">
+                            <i class="fa-solid fa-file-excel text-primary mr-3"></i>
+                            <div>
+                                <p id="file-name" class="font-medium"></p>
+                                <p id="file-size" class="text-sm text-gray-500"></p>
+                            </div>
+                        </div>
+                        <button id="remove-file" class="text-gray-400 hover:text-red-500">
+                            <i class="fa-solid fa-times-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 列选择区域 -->
+        <section id="column-selection" class="max-w-3xl mx-auto mb-16 hidden">
+            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                <h3 class="text-xl font-semibold mb-6 flex items-center">
+                    <i class="fa-solid fa-list-ul text-primary mr-2"></i>选择抽签列
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="col-span-1">
+                        <label for="name-column" class="block text-sm font-medium text-gray-700 mb-2">抽签列</label>
+                        <div class="relative">
+                            <select id="name-column"
+                                class="block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-lg appearance-none bg-white">
+                                <!-- 选项将通过JavaScript动态添加 -->
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <button id="start-selection"
+                        class="bg-secondary hover:bg-secondary/90 text-white font-medium py-3 px-6 rounded-lg transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-play mr-2"></i>开始抽签
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 抽签区域 -->
+        <section id="selection-area" class="max-w-4xl mx-auto mb-16 hidden">
+            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-xl font-semibold flex items-center">
+                        <i class="fa-solid fa-random text-primary mr-2"></i>随机抽签
+                    </h3>
+                    <div class="flex space-x-2">
+                        <span id="total-count"
+                            class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
+                            总数: <span id="total-number">0</span>
+                        </span>
+                        <span id="picked-count"
+                            class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
+                            已抽: <span id="picked-number">0</span>
+                        </span>
+                        <span id="remaining-count"
+                            class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+                            剩余: <span id="remaining-number">0</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="relative h-64 md:h-80 flex items-center justify-center bg-gradient-to-r from-primary/5 to-secondary/5 rounded-xl mb-8 overflow-hidden">
+                    <!-- 装饰元素 -->
+                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-primary/5 rounded-full"></div>
+                    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-secondary/5 rounded-full"></div>
+
+                    <div id="name-display" class="text-center z-10">
+                        <p class="text-gray-500 mb-2 text-sm">准备开始</p>
+                        <div id="name-box"
+                            class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-dark py-4 px-8 rounded-xl min-h-[120px] flex items-center justify-center">
+                            点击开始按钮
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center space-x-4">
+                    <button id="reset-selection"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-6 rounded-lg transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-refresh mr-2"></i>重置抽签
+                    </button>
+                    <button id="pick-name"
+                        class="bg-secondary hover:bg-secondary/90 text-white font-medium py-3 px-8 rounded-lg transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-lg">
+                        <i class="fa-solid fa-hand-pointer mr-2"></i>抽签
+                    </button>
+                    <button id="back-to-upload"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-6 rounded-lg transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>返回
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 已抽签列表 -->
+        <section id="history-section" class="max-w-4xl mx-auto hidden">
+            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold flex items-center">
+                        <i class="fa-solid fa-history text-primary mr-2"></i>抽签历史
+                    </h3>
+                    <button id="clear-history" class="text-sm text-gray-500 hover:text-red-500 flex items-center">
+                        <i class="fa-solid fa-trash mr-1"></i>清空历史
+                    </button>
+                </div>
+
+                <div id="history-list"
+                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-60 overflow-y-auto p-2">
+                    <!-- 历史记录将通过JavaScript动态添加 -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 加载动画模态框 -->
+    <div id="loading-modal"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-8 flex flex-col items-center">
+            <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p id="loading-text" class="text-lg font-medium text-gray-800">处理中...</p>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let excelData = null;
+        let nameColumn = null;
+        let items = [];               // 所有项目列表
+        let pickedItems = [];         // 已中签项目列表
+        let remainingItems = [];      // 剩余未抽项目列表
+        let isSelecting = false;
+        let selectionInterval = null;
+        let currentRandomIndex = -1;  // 记录当前随机选中的索引
+
+        // DOM 元素
+        const fileInput = document.getElementById('file-input');
+        const fileSelectBtn = document.getElementById('file-select-btn');
+        const dropArea = document.getElementById('drop-area');
+        const fileInfo = document.getElementById('file-info');
+        const fileName = document.getElementById('file-name');
+        const fileSize = document.getElementById('file-size');
+        const removeFile = document.getElementById('remove-file');
+        const columnSelection = document.getElementById('column-selection');
+        const nameColumnSelect = document.getElementById('name-column');
+        const startSelection = document.getElementById('start-selection');
+        const selectionArea = document.getElementById('selection-area');
+        const nameDisplay = document.getElementById('name-display');
+        const nameBox = document.getElementById('name-box');
+        const pickName = document.getElementById('pick-name');
+        const resetSelection = document.getElementById('reset-selection');
+        const backToUpload = document.getElementById('back-to-upload');
+        const totalNumber = document.getElementById('total-number');
+        const pickedNumber = document.getElementById('picked-number');
+        const remainingNumber = document.getElementById('remaining-number');
+        const historySection = document.getElementById('history-section');
+        const historyList = document.getElementById('history-list');
+        const clearHistory = document.getElementById('clear-history');
+        const loadingModal = document.getElementById('loading-modal');
+        const loadingText = document.getElementById('loading-text');
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', () => {
+            // 事件监听设置...
+            fileSelectBtn.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', handleFileSelect);
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight() {
+                dropArea.classList.add('border-primary');
+                dropArea.classList.add('bg-primary/5');
+            }
+
+            function unhighlight() {
+                dropArea.classList.remove('border-primary');
+                dropArea.classList.remove('bg-primary/5');
+            }
+
+            dropArea.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+
+                if (files.length) {
+                    handleFiles(files);
+                }
+            }
+
+            removeFile.addEventListener('click', () => {
+                resetFileInput();
+            });
+
+            // 开始抽签
+            startSelection.addEventListener('click', () => {
+                nameColumn = nameColumnSelect.value;
+                if (!nameColumn) {
+                    showToast('请选择抽签列', 'error');
+                    return;
+                }
+
+                // 提取抽签列表
+                items = excelData.map(row => row[nameColumn]).filter(item => {
+                    return item !== undefined && item !== null && String(item).trim() !== '';
+                });
+
+                if (items.length === 0) {
+                    showToast('所选列中没有找到有效抽签项', 'error');
+                    return;
+                }
+
+                // 初始化抽签状态
+                resetDrawState();
+                
+                // 显示抽签区域，隐藏其他区域
+                columnSelection.classList.add('hidden');
+                selectionArea.classList.remove('hidden');
+                historySection.classList.remove('hidden');
+            });
+
+            // 抽签按钮
+            pickName.addEventListener('click', () => {
+                if (isSelecting) {
+                    stopSelection();
+                } else {
+                    // 检查是否所有抽签项都已被选中
+                    if (remainingItems.length === 0) {
+                        showToast('所有抽签项都已被抽中！', 'info');
+                        resetSelection.click();
+                        return;
+                    }
+
+                    startSelectionAnimation();
+                }
+            });
+
+            // 重置抽签
+            resetSelection.addEventListener('click', () => {
+                resetDrawState();
+            });
+
+            // 返回上传页面
+            backToUpload.addEventListener('click', () => {
+                if (isSelecting) {
+                    stopSelection();
+                }
+
+                selectionArea.classList.add('hidden');
+                historySection.classList.add('hidden');
+                columnSelection.classList.remove('hidden');
+            });
+
+            // 清空历史记录（等同于重置）
+            clearHistory.addEventListener('click', () => {
+                resetDrawState();
+            });
+        });
+
+        // 重置抽签状态
+        function resetDrawState() {
+            if (isSelecting) {
+                stopSelection();
+            }
+
+            // 重置为初始状态，所有项目都未被抽取
+            pickedItems = [];
+            remainingItems = [...items]; // 复制所有项目到剩余列表
+            currentRandomIndex = -1;
+            nameBox.textContent = '点击开始按钮';
+            nameBox.classList.remove('name-selected');
+            nameDisplay.querySelector('p').textContent = '准备开始';
+            
+            // 更新计数显示
+            totalNumber.textContent = items.length;
+            pickedNumber.textContent = '0';
+            remainingNumber.textContent = items.length;
+            
+            updateHistoryList();
+        }
+
+        // 处理文件选择
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            if (files.length) {
+                handleFiles(files);
+            }
+        }
+
+        // 处理文件
+        function handleFiles(files) {
+            const file = files[0];
+            if (!file.name.match(/\.(xlsx|xls)$/i)) {
+                showToast('请上传Excel文件 (.xlsx 或 .xls)', 'error');
+                return;
+            }
+
+            // 显示文件信息
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileInfo.classList.remove('hidden');
+
+            // 处理Excel文件
+            showLoading('正在读取文件...');
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+
+                    // 获取第一个工作表
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+
+                    // 转换为JSON
+                    excelData = XLSX.utils.sheet_to_json(worksheet);
+
+                    if (excelData.length === 0) {
+                        throw new Error('Excel文件中没有数据');
+                    }
+
+                    // 获取列名
+                    const columnNames = Object.keys(excelData[0]);
+                    nameColumnSelect.innerHTML = '';
+                    columnNames.forEach(column => {
+                        const option = document.createElement('option');
+                        option.value = column;
+                        option.textContent = column;
+                        nameColumnSelect.appendChild(option);
+                    });
+
+                    // 显示列选择区域
+                    columnSelection.classList.remove('hidden');
+                    hideLoading();
+                } catch (error) {
+                    showToast('读取Excel文件时出错: ' + error.message, 'error');
+                    hideLoading();
+                }
+            };
+
+            reader.onerror = function () {
+                showToast('读取文件时出错', 'error');
+                hideLoading();
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        // 重置文件输入
+        function resetFileInput() {
+            fileInput.value = '';
+            fileInfo.classList.add('hidden');
+            columnSelection.classList.add('hidden');
+            selectionArea.classList.add('hidden');
+            historySection.classList.add('hidden');
+            pickedItems = [];
+            items = [];
+            remainingItems = [];
+            totalNumber.textContent = '0';
+            pickedNumber.textContent = '0';
+            remainingNumber.textContent = '0';
+            historyList.innerHTML = '';
+        }
+
+        // 显示加载模态框
+        function showLoading(text) {
+            loadingText.textContent = text;
+            loadingModal.classList.remove('hidden');
+        }
+
+        // 隐藏加载模态框
+        function hideLoading() {
+            loadingModal.classList.add('hidden');
+        }
+
+        // 显示提示信息
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.classList.add('fixed', 'top-4', 'right-4', 'bg-white', 'shadow-lg', 'rounded-md', 'px-4', 'py-2', 'z-50', 'transition-all', 'duration-300', 'ease-in-out');
+            if (type === 'error') {
+                toast.classList.add('border-l-4', 'border-red-500');
+            } else if (type === 'info') {
+                toast.classList.add('border-l-4', 'border-blue-500');
+            }
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-x-4');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes < 1024) {
+                return bytes + ' B';
+            } else if (bytes < 1024 * 1024) {
+                return (bytes / 1024).toFixed(2) + ' KB';
+            } else {
+                return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+            }
+        }
+
+        // 开始抽签动画
+        function startSelectionAnimation() {
+            isSelecting = true;
+            pickName.innerHTML = '<i class="fa-solid fa-stop mr-2"></i>停止';
+            
+            // 移除高亮效果
+            nameBox.classList.remove('name-selected');
+            
+            // 只从剩余未抽的项目中随机选择
+            selectionInterval = setInterval(() => {
+                if (remainingItems.length > 0) {
+                    // 记录当前随机索引，而不仅仅是名称
+                    currentRandomIndex = Math.floor(Math.random() * remainingItems.length);
+                    nameBox.textContent = remainingItems[currentRandomIndex];
+                }
+            }, 100);
+        }
+
+        // 停止抽签动画
+        function stopSelection() {
+            isSelecting = false;
+            pickName.innerHTML = '<i class="fa-solid fa-hand-pointer mr-2"></i>抽签';
+            clearInterval(selectionInterval);
+            
+            // 使用记录的索引来处理选中项，而不是依赖名称匹配
+            if (currentRandomIndex !== -1 && currentRandomIndex < remainingItems.length) {
+                // 获取选中的项目
+                let selectedItem = remainingItems[currentRandomIndex];
+                
+                // 从剩余列表中移除选中的项目（通过索引，更可靠）
+                remainingItems.splice(currentRandomIndex, 1);
+                
+                // 添加到已选列表
+                pickedItems.push(selectedItem);
+                
+                // 更新计数和UI
+                pickedNumber.textContent = pickedItems.length;
+                remainingNumber.textContent = remainingItems.length;
+                nameBox.classList.add('name-selected');
+                updateHistoryList();
+                
+                // 重置当前随机索引
+                currentRandomIndex = -1;
+            } else {
+                // 异常情况处理
+                showToast('发生错误，无法完成抽签', 'error');
+                console.error('抽签错误: 无效的索引', currentRandomIndex, remainingItems.length);
+                // 尝试恢复
+                if (remainingItems.length > 0) {
+                    currentRandomIndex = 0;
+                }
+            }
+            
+            // 如果所有项目都已抽取，显示提示
+            if (remainingItems.length === 0) {
+                showToast('所有项目都已抽取完毕！', 'info');
+            }
+        }
+
+        // 更新历史记录列表
+        function updateHistoryList() {
+            historyList.innerHTML = '';
+            pickedItems.forEach((item, index) => {
+                const historyItem = document.createElement('div');
+                historyItem.classList.add('bg-gray-100', 'rounded-md', 'px-3', 'py-2', 'text-center', 'transition-all');
+                // 为每个历史项添加编号，清晰显示抽签顺序
+                historyItem.innerHTML = `<span class="text-xs text-gray-500">#${index + 1}</span><br>${item}`;
+                historyList.appendChild(historyItem);
+            });
+        }
+    </script>
+</body>
+
+</html>
+    
+
+
+

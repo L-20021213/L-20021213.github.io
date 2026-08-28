@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片颜色提取器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #fff;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        label {
+            margin-right: 10px;
+            color: #333;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 300px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        #result.error {
+            color: #d9534f;
+        }
+
+        #copyButtonContainer {
+            margin-top: 10px;
+        }
+
+        #copyButton {
+            padding: 5px 10px;
+            font-size: 16px;
+            background-color: #5bc0de;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #copyButton:hover {
+            background-color: #31b0d5;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>图片颜色提取器</h1>
+
+    <label for="imageInput">输入图片链接：</label>
+    <input type="text" id="imageInput" placeholder="输入图片链接...">
+    &nbsp; <!-- 加间隙 -->
+    <button onclick="extractColor()">提取颜色</button>
+
+    <div id="result"></div>
+    <div id="copyButtonContainer"></div>
+
+    <script>
+        function extractColor() {
+            const imageUrl = document.getElementById('imageInput').value;
+            const resultDiv = document.getElementById('result');
+            const copyButtonContainer = document.getElementById('copyButtonContainer');
+
+            fetch(`https://img-color.siax.cn/api?img=${encodeURIComponent(imageUrl)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`提取颜色失败: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    resultDiv.innerHTML = `颜色值: ${data.RGB}`;
+                    resultDiv.classList.remove('error');
+                    showCopyButton(data.RGB);
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `错误: ${error.message}`;
+                    resultDiv.classList.add('error');
+                    hideCopyButton();
+                });
+        }
+
+        function showCopyButton(color) {
+            const copyButtonContainer = document.getElementById('copyButtonContainer');
+            copyButtonContainer.innerHTML = `<button id="copyButton" onclick="copyColor('${color}')">一键复制颜色</button>`;
+        }
+
+        function hideCopyButton() {
+            const copyButtonContainer = document.getElementById('copyButtonContainer');
+            copyButtonContainer.innerHTML = ''; // 隐藏复制按钮
+        }
+
+        function copyColor(color) {
+            const dummyTextArea = document.createElement('textarea');
+            dummyTextArea.value = color;
+            document.body.appendChild(dummyTextArea);
+            dummyTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummyTextArea);
+            alert('颜色已复制到剪贴板！');
+        }
+    </script>
+
+</body>
+</html>
+

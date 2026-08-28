@@ -1,0 +1,357 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>一般纳税人资格查询快速入口</title>
+  <link rel="icon" type="image/ico" href="https://cdn.jsdelivr.net/gh/L-20021213/picture@1.0.0/Blog/logo.png">
+  <style>
+    @font-face {
+      font-family: 'HarmonyOS Sans SC Medium';
+      src: url('https://cdn.jsdelivr.net/gh/L-20021213/static/HarmonyOS_Sans_SC_Medium.subset.woff2') format('woff2');
+    }
+    body {
+      background-color: #f9f9f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px;
+      /* 设置全局字体为新添加的字体 */
+      font-family: 'HarmonyOS Sans SC Medium', sans-serif;
+    }
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #007BFF;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    #searchBar {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 15px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    #searchResults {
+      margin-bottom: 20px;
+      padding: 0;
+    }
+    #searchResults li {
+      list-style: none;
+      margin: 5px 0;
+    }
+    #searchResults a {
+      text-decoration: none;
+      color: #28A745;
+      font-weight: bold;
+      padding: 10px 15px;
+      display: block;
+      background: #f1f9f4;
+      border-radius: 5px;
+    }
+    #searchResults a:hover {
+      background: #cfe8d6;
+    }
+    .region {
+      margin-bottom: 30px;
+    }
+    .region h2 {
+      font-size: 20px;
+      color: #007BFF;
+      border-left: 5px solid #007BFF;
+      padding-left: 10px;
+      margin-bottom: 10px;
+    }
+    .city-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    .city-list li {
+      flex: 1 1 22%;
+      margin-bottom: 10px;
+      padding: 5px;
+    }
+    .city-list a {
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background: #f9f9f9;
+      display: block;
+      text-align: center;
+    }
+    .city-list a:hover {
+      background: #007BFF;
+      color: #fff;
+    }
+    #buttonLinks {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    #govLink, #personalBlogLink {
+      text-align: center;
+      flex: 1;
+    }
+    #govLink a, #personalBlogLink a {
+      text-decoration: none;
+      font-size: 18px;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: bold;
+      display: block;
+    }
+    #govLink a {
+      background-color: #007BFF;
+      color: white;
+    }
+    #govLink a:hover {
+      background-color: #0056b3;
+    }
+    #personalBlogLink a {
+      background-color: #28A745;
+      color: white;
+      margin-left: 20px;
+    }
+    #personalBlogLink a:hover {
+      background-color: #218838;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .city-list li {
+        flex: 1 1 48%; /* Two items per row */
+      }
+      #buttonLinks {
+        flex-direction: column;
+        gap: 10px;
+      }
+      #govLink, #personalBlogLink {
+        flex: 1;
+        margin-bottom: 10px;
+      }
+      h1 {
+        font-size: 20px; /* Smaller font size on mobile */
+      }
+      #searchBar {
+        font-size: 14px; /* Smaller search bar on mobile */
+      }
+      .region h2 {
+        font-size: 18px; /* Smaller heading for regions */
+      }
+      #personalBlogLink a {
+        margin-left: 0px!important;
+      }
+    }
+    @media (max-width: 480px) {
+      .city-list li {
+        flex: 1 1 100%; /* One item per row */
+      }
+      h1 {
+        font-size: 18px; /* Further reduce font size */
+      }
+      #searchBar {
+        font-size: 14px;
+        padding: 12px; /* Adjust padding for smaller screens */
+      }
+      #govLink a, #personalBlogLink a {
+        font-size: 16px; /* Adjust button font size */
+        padding: 8px 16px; /* Smaller padding */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>一般纳税人资格查询快速入口</h1>
+    <!-- 国家税务总局官网和个人博客按钮并排 -->
+    <div id="buttonLinks">
+      <!-- 国家税务总局官网链接 -->
+      <div id="govLink">
+        <a href="https://12366.chinatax.gov.cn/sscx/taxpayer/main" target="_blank">国家税务总局官网</a>
+      </div>
+      <!-- 个人博客链接 -->
+      <div id="personalBlogLink">
+        <a href="https://siax.cn/" target="_blank">访问我的个人博客</a>
+      </div>
+    </div>
+    <input type="text" id="searchBar" placeholder="搜索城市名称或拼音简写/简称..." />
+    <ul id="searchResults"></ul>
+    <div id="cityList">
+      <!-- 华北地区 -->
+      <div class="region">
+        <h2>华北</h2>
+        <ul class="city-list">
+          <li><a href="#" data-value="beijing" data-abbr="bj">北京</a></li>
+          <li><a href="#" data-value="tianjin" data-abbr="tj">天津</a></li>
+          <li><a href="#" data-value="hebei" data-abbr="hb">河北</a></li>
+          <li><a href="#" data-value="shanxi" data-abbr="sx">山西</a></li>
+          <li><a href="#" data-value="neimenggu" data-abbr="nmg">内蒙古</a></li>
+        </ul>
+      </div>
+      <!-- 东北地区 -->
+      <div class="region">
+        <h2>东北</h2>
+        <ul class="city-list">
+          <li><a href="#" data-value="liaoning" data-abbr="ln">辽宁(不含大连)</a></li>
+          <li><a href="#" data-value="dalian" data-abbr="dl">大连</a></li>
+          <li><a href="#" data-value="jilin" data-abbr="jl">吉林</a></li>
+          <li><a href="#" data-value="heilongjiang" data-abbr="hlj">黑龙江</a></li>
+        </ul>
+      </div>
+      <!-- 华东地区 -->
+      <div class="region">
+        <h2>华东</h2>
+        <ul class="city-list">
+          <li><a href="#" data-value="shanghai" data-abbr="sh">上海</a></li>
+          <li><a href="#" data-value="jiangsu" data-abbr="js">江苏</a></li>
+          <li><a href="#" data-value="zhejiang" data-abbr="zj">浙江(不含宁波)</a></li>
+          <li><a href="#" data-value="ningbo" data-abbr="nb">宁波</a></li>
+          <li><a href="#" data-value="anhui" data-abbr="ah">安徽</a></li>
+          <li><a href="#" data-value="jiangxi" data-abbr="jx">江西</a></li>
+          <li><a href="#" data-value="fujian" data-abbr="fj">福建(不含厦门)</a></li>
+          <li><a href="#" data-value="xiamen" data-abbr="xm">厦门</a></li>
+          <li><a href="#" data-value="shandong" data-abbr="sd">山东(不含青岛)</a></li>
+          <li><a href="#" data-value="qingdao" data-abbr="qd">青岛</a></li>
+        </ul>
+      </div>
+      <!-- 华南地区 -->
+      <div class="region">
+        <h2>华南</h2>
+        <ul class="city-list">
+          <li><a href="#" data-value="guangdong" data-abbr="gd">广东(不含深圳)</a></li>
+          <li><a href="#" data-value="shenzhen" data-abbr="sz">深圳</a></li>
+          <li><a href="#" data-value="guangxi" data-abbr="gx">广西</a></li>
+          <li><a href="#" data-value="hainan" data-abbr="ha">海南</a></li>
+        </ul>
+      </div>
+      <!-- 华中地区 -->
+      <div class="region">
+        <h2>华中</h2>
+        <ul class="city-list">
+          <li><a href="#" data-value="henan" data-abbr="hn">河南</a></li>
+          <li><a href="#" data-value="hubei" data-abbr="hb">湖北</a></li>
+          <li><a href="#" data-value="hunan" data-abbr="hnl">湖南</a></li>
+        </ul>
+      </div>
+      <!-- 西南地区 -->
+      <div class="region">
+        <h2>西南</h2>
+        <ul class="city-list">
+          <li><a href="#" data-value="chongqing" data-abbr="cq">重庆</a></li>
+          <li><a href="#" data-value="sichuan" data-abbr="sc">四川</a></li>
+          <li><a href="#" data-value="guizhou" data-abbr="gz">贵州</a></li>
+          <li><a href="#" data-value="yunnan" data-abbr="yn">云南</a></li>
+          <li><a href="#" data-value="xizang" data-abbr="xz">西藏</a></li>
+        </ul>
+      </div>
+      <!-- 西北地区 -->
+      <div class="region">
+        <h2>西北</h2>
+        <ul class="city-list">
+          <li><a href="#" data-value="shaanxi" data-abbr="sxa">陕西</a></li>
+          <li><a href="#" data-value="gansu" data-abbr="gs">甘肃</a></li>
+          <li><a href="#" data-value="qinghai" data-abbr="qh">青海</a></li>
+          <li><a href="#" data-value="ningxia" data-abbr="nx">宁夏</a></li>
+          <li><a href="#" data-value="xinjiang" data-abbr="xj">新疆</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <script>
+    const cityLinks = document.querySelectorAll('.city-list a');
+    const searchBar = document.getElementById('searchBar');
+    const searchResults = document.getElementById('searchResults');
+
+    function openCityLink(cityCode) {
+      let baseUrl;
+      // 西藏的链接格式不同
+      if (cityCode === 'xizang') {
+        baseUrl = 'https://etax.' + cityCode + '.chinatax.gov.cn:5100/xxbg/view/zhsffw/#/query/ybnsrzgcx';
+      }
+      // 陕西的链接格式不同
+      else if (cityCode === 'shaanxi') {
+        baseUrl = 'https://etax.' + cityCode + '.chinatax.gov.cn/xxbg/view/zhsffw/#/query/ybnsrzgcx';
+      }
+      // 四川的链接格式不同
+      else if (cityCode === 'sichuan') {
+        baseUrl = 'https://etax.' + cityCode + '.chinatax.gov.cn/xxbg/view/zhsffw/#/query/ybnsrzgcx';
+      } else {
+        baseUrl = 'https://etax.' + cityCode + '.chinatax.gov.cn:8443/xxbg/view/zhsffw/#/query/ybnsrzgcx';
+      }
+      // 在新窗口打开链接
+      window.open(baseUrl, '_blank');
+    }
+
+    searchBar.addEventListener('input', () => {
+      const searchValue = searchBar.value.toLowerCase();
+      searchResults.innerHTML = '';  // 清空搜索结果
+
+      if (searchValue) {
+        cityLinks.forEach(link => {
+          const cityName = link.textContent.toLowerCase();
+          const cityCode = link.dataset.value.toLowerCase();
+          const cityAbbr = (link.getAttribute('data-abbr') || '').toLowerCase();
+          // 采用 startsWith 检查输入是否为各字段开头
+          if (
+            cityName.startsWith(searchValue) ||
+            cityCode.startsWith(searchValue) ||
+            cityAbbr.startsWith(searchValue)
+          ) {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.textContent = link.textContent;
+            a.href = '#';
+            a.addEventListener('click', (e) => {
+              e.preventDefault();
+              openCityLink(cityCode);
+            });
+            li.appendChild(a);
+            searchResults.appendChild(li);
+          }
+        });
+      }
+    });
+
+    // 监听回车键
+    searchBar.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const firstResult = searchResults.querySelector('a');
+        if (firstResult) {
+          firstResult.click();
+        }
+      }
+    });
+
+    // 列表点击跳转
+    cityLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        openCityLink(link.dataset.value);
+      });
+    });
+  </script>
+</body>
+</html>
+
