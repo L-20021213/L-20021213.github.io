@@ -21,8 +21,8 @@
   --warn:#ffc857;
   --danger:#ff7b7b;
   --radius:16px;
-  --strip-w:94%;
-  --strip-h:22%;
+  --strip-w:98%;
+  --strip-h:33%;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
@@ -64,6 +64,14 @@ body{
   position:relative;overflow:hidden;
 }
 .card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.head-badges{display:flex;align-items:center;gap:7px;flex:none}
+.ignored-tag{
+  display:none;align-items:center;height:22px;padding:0 9px;border-radius:999px;
+  font-size:10.5px;letter-spacing:.3px;color:#8fa3bb;border:1px solid #223145;background:#0b1420;
+  animation:fadeIn .2s ease;
+}
+.ignored-tag.show{display:inline-flex}
+.ignored-tag b{margin-left:3px;color:#c6d6ea;font-weight:600}
 .step{display:flex;align-items:center;gap:9px;min-width:0}
 .step-no{
   width:22px;height:22px;flex:none;border-radius:7px;display:grid;place-items:center;
@@ -176,6 +184,23 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
 .stage.single .scanline{animation:none;opacity:0}
 @keyframes scan{0%{top:8%;opacity:.2}50%{top:92%;opacity:1}100%{top:8%;opacity:.2}}
 .frame.hit{border-color:#8dffd6;box-shadow:0 0 0 3000px rgba(3,7,13,.62), 0 0 0 2px rgba(55,217,154,.45), inset 0 0 28px rgba(55,217,154,.5)}
+.hit-card{
+  position:absolute;left:50%;top:12px;transform:translateX(-50%) translateY(-8px);
+  display:flex;flex-direction:row;align-items:center;gap:8px;
+  width:max-content;max-width:calc(100% - 20px);
+  padding:7px 14px;border-radius:14px;background:rgba(5,22,17,.9);
+  border:1px solid rgba(55,217,154,.8);
+  box-shadow:0 8px 22px rgba(0,0,0,.5), 0 0 0 3px rgba(55,217,154,.12);
+  opacity:0;pointer-events:none;transition:opacity .14s,transform .18s;
+}
+.hit-card.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.hit-card.warn{background:rgba(34,23,6,.92);border-color:rgba(255,200,87,.85);box-shadow:0 8px 22px rgba(0,0,0,.5), 0 0 0 3px rgba(255,200,87,.14)}
+.hit-card.warn em{color:var(--warn)}
+.hit-card em{flex:none;font-style:normal;font-size:10.5px;letter-spacing:1.2px;color:var(--accent)}
+.hit-card b{
+  font-size:13px;font-weight:700;color:#eaf6ff;letter-spacing:.4px;min-width:0;
+  white-space:normal;word-break:break-all;line-height:1.35;text-align:left;
+}
 
 .actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .actions .btn{flex:1;min-width:92px}
@@ -207,18 +232,45 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
   font-size:10.5px;letter-spacing:.3px;color:var(--muted);border:1px solid var(--line);
 }
 .rule-state.active{color:var(--accent);border-color:rgba(55,217,154,.4);background:rgba(55,217,154,.1)}
+.rule-head-right{flex:none;display:flex;align-items:center;gap:7px}
+.rule-reset{
+  display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;border-radius:999px;
+  border:1px solid var(--line);background:rgba(22,32,47,.6);color:#9fb3cb;
+  font-family:inherit;font-size:10.5px;letter-spacing:.3px;cursor:pointer;
+  transition:color .16s,border-color .16s,background .16s,transform .12s;
+}
+.rule-reset:hover{color:var(--text);border-color:#3a4f69;background:#1a2637}
+.rule-reset:active{transform:scale(.97)}
+.rule-reset svg{width:11px;height:11px;flex:none}
 .rule-row{display:flex;align-items:center;gap:10px}
 .rule-row+.rule-row{margin-top:9px}
 .rule-ctl{flex:1;min-width:0;display:flex;gap:7px;flex-wrap:wrap}
 .rule-ctl select{flex:none;width:112px}
 .rule-ctl .input{flex:1;min-width:0;height:40px;font-size:13px}
 .rule-ctl .num{flex:none;width:56px}
+.safe-head{display:flex;align-items:center;gap:9px;width:100%;flex-wrap:wrap}
+.safe-switch{display:inline-flex;align-items:center;gap:7px;flex:none;cursor:pointer;user-select:none}
+.safe-switch input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.safe-track{position:relative;flex:none;width:36px;height:20px;border-radius:999px;background:#1e2b3d;border:1px solid #2f425b;transition:background .18s,border-color .18s}
+.safe-knob{position:absolute;left:2px;top:2px;width:14px;height:14px;border-radius:50%;background:#7f95b2;transition:left .18s,background .18s,box-shadow .18s}
+.safe-switch input:checked + .safe-track{background:rgba(55,217,154,.18);border-color:rgba(55,217,154,.6)}
+.safe-switch input:checked + .safe-track .safe-knob{left:18px;background:var(--accent);box-shadow:0 0 8px rgba(55,217,154,.55)}
+.safe-switch input:focus-visible + .safe-track{box-shadow:0 0 0 3px rgba(55,217,154,.16)}
+.safe-switch input:checked ~ .safe-label{color:var(--text)}
+.safe-label{font-size:11.5px;color:var(--muted);letter-spacing:.3px;transition:color .18s}
+.safe-note{font-size:10.5px;color:#7f95b2;letter-spacing:.2px}
+.safe-config{display:flex;align-items:center;gap:7px;width:100%}
+.safe-config[hidden]{display:none}
 .rule-hint{margin:10px 0 0;padding:0 4px 0 9px;border-left:2px solid rgba(55,217,154,.3);font-size:11px;color:var(--muted);line-height:1.65}
 .export-note{margin-top:13px;display:flex;flex-direction:column;gap:6px}
 .export-note span{position:relative;padding-left:12px;font-size:11px;color:var(--muted);line-height:1.55}
 .export-note span::before{content:"";position:absolute;left:0;top:7px;width:4px;height:4px;border-radius:50%;background:#3a4d66}
 
 /* ---------- 识别模式切换 ---------- */
+.scan-mode-row{display:flex;align-items:center;gap:8px;margin-top:12px}
+.scan-mode-row+.scan-mode-row{margin-top:8px}
+.scan-mode-label{flex:none;width:26px;font-size:11px;color:var(--muted);letter-spacing:.5px}
+.scan-mode-row .mode-switch{flex:1;min-width:0;margin-top:0}
 .mode-switch{
   display:flex;gap:4px;margin-top:12px;padding:4px;border-radius:12px;
   background:#0b1320;border:1px solid var(--line);
@@ -232,6 +284,7 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
 .mode-opt.active{background:rgba(55,217,154,.14);color:var(--accent);box-shadow:inset 0 0 0 1px rgba(55,217,154,.35)}
 .shot-btn{width:100%;height:52px;margin-top:10px;font-size:15px;letter-spacing:1px}
 .shot-btn[hidden]{display:none}
+.stage.qr .frame{width:auto;height:88%;aspect-ratio:1/1}
 
 /* ---------- 列表 ---------- */
 .count{font-size:12.5px;color:var(--muted);flex:none}
@@ -327,7 +380,10 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
       <section class="card" id="scanCard">
         <div class="card-head">
           <div class="step"><span class="step-no">2</span><h2>SN 连续扫码</h2></div>
-          <div class="scan-state" id="scanState"><i></i><span id="scanStateText">摄像头未开启</span></div>
+          <div class="head-badges">
+            <span class="ignored-tag" id="ignoredTag">已忽略 <b id="ignoredCount">0</b></span>
+            <div class="scan-state" id="scanState"><i></i><span id="scanStateText">摄像头未开启</span></div>
+          </div>
         </div>
         <div class="stage idle" id="stage">
           <video id="video" playsinline muted autoplay></video>
@@ -336,13 +392,24 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
           </div>
           <div class="stage-tip" id="stageTip">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><rect x="8" y="8" width="8" height="8" rx="1.5" opacity=".5"/></svg>
-            <span class="big">仅识别取景框内的条码</span>
-            <span>框外多码自动忽略，避免误扫</span>
+            <span class="big" id="tipTitle">仅识别取景框内的条码</span>
+            <span id="tipSub">框外多码自动忽略，避免误扫</span>
+          </div>
+          <div class="hit-card" id="hitCard"><em id="hitLabel">已录入</em><b id="hitSn"></b></div>
+        </div>
+        <div class="scan-mode-row">
+          <span class="scan-mode-label">识别</span>
+          <div class="mode-switch" id="modeSwitch">
+            <button class="mode-opt active" type="button" data-mode="continuous">连续扫码</button>
+            <button class="mode-opt" type="button" data-mode="single">单点识别</button>
           </div>
         </div>
-        <div class="mode-switch" id="modeSwitch">
-          <button class="mode-opt active" type="button" data-mode="continuous">连续扫码</button>
-          <button class="mode-opt" type="button" data-mode="single">单点识别</button>
+        <div class="scan-mode-row">
+          <span class="scan-mode-label">类型</span>
+          <div class="mode-switch" id="codeSwitch">
+            <button class="mode-opt active" type="button" data-code="barcode">条形码</button>
+            <button class="mode-opt" type="button" data-code="qr">二维码</button>
+          </div>
         </div>
         <button class="btn primary shot-btn" id="shotBtn" type="button" hidden>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.2"/></svg>
@@ -366,7 +433,31 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18l-7 8v5l-4 2v-7z"/></svg>
               解析规则
             </span>
-            <span class="rule-state" id="ruleState">默认</span>
+            <div class="rule-head-right">
+              <span class="rule-state" id="ruleState">默认</span>
+              <button class="rule-reset" id="ruleReset" type="button" title="一键恢复默认规则">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+                清空规则
+              </button>
+            </div>
+          </div>
+          <div class="rule-row">
+            <span class="rule-name">安全</span>
+            <div class="rule-ctl">
+              <div class="safe-head">
+                <label class="safe-switch">
+                  <input type="checkbox" id="safeToggle">
+                  <span class="safe-track"><span class="safe-knob"></span></span>
+                  <span class="safe-label" id="safeLabel">安全模式</span>
+                </label>
+                <span class="safe-note">限制最低长度，防止误扫</span>
+              </div>
+              <div class="safe-config" id="safeConfig" hidden>
+                <span class="rule-tag">最短</span>
+                <input type="number" class="input num" id="minLen" value="6" min="1" max="64" step="1">
+                <span class="rule-unit">位</span>
+              </div>
+            </div>
           </div>
           <div class="rule-row">
             <span class="rule-name">取值</span>
@@ -480,12 +571,19 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
     cutMode: 'all',
     cutFrom: 1,
     cutN: 8,
+    trimHead: 0,
+    trimTail: 0,
+    minLen: 0,
+    safeOn: false,
+    safeLen: 6,
     matchMode: 'none',
     matchText: '',
+    ignored: 0,
     sns: [],
     scanning: false,
     torchOn: false,
-    scanMode: 'continuous'
+    scanMode: 'continuous',
+    symbology: 'barcode'
   };
 
   var el = {
@@ -502,6 +600,9 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
     cutFrom: $('cutFrom'),
     cutSep: $('cutSep'),
     cutN: $('cutN'),
+    minLen: $('minLen'),
+    safeToggle: $('safeToggle'),
+    safeConfig: $('safeConfig'),
     tagHead: $('tagHead'),
     tagTail: $('tagTail'),
     unitFrom: $('unitFrom'),
@@ -511,6 +612,7 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
     ruleHint: $('ruleHint'),
     ruleState: $('ruleState'),
     ruleBox: $('ruleBox'),
+    ruleReset: $('ruleReset'),
     addBtn: $('addBtn'),
     snCount: $('snCount'),
     snList: $('snList'),
@@ -520,7 +622,15 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
     clearBtn: $('clearBtn'),
     toastWrap: $('toastWrap'),
     frame: $('frame'),
+    hitCard: $('hitCard'),
+    hitLabel: $('hitLabel'),
+    hitSn: $('hitSn'),
+    ignoredTag: $('ignoredTag'),
+    ignoredCount: $('ignoredCount'),
     modeSwitch: $('modeSwitch'),
+    codeSwitch: $('codeSwitch'),
+    tipTitle: $('tipTitle'),
+    tipSub: $('tipSub'),
     shotBtn: $('shotBtn')
   };
 
@@ -588,8 +698,8 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
     if (state.cutMode === 'tail') return state.cutN > 0 ? raw.slice(-state.cutN) : '';
     if (state.cutMode === 'range') return raw.slice(state.cutFrom - 1, state.cutN);
     if (state.cutMode === 'trim') {
-      var end = raw.length - state.cutN;
-      return (end > state.cutFrom) ? raw.slice(state.cutFrom, end) : '';
+      var end = raw.length - state.trimTail;
+      return (end > state.trimHead) ? raw.slice(state.trimHead, end) : '';
     }
     return raw;
   }
@@ -607,23 +717,28 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
     var parts = [state.cutMode === 'head' ? '取前 ' + state.cutN + ' 位'
       : state.cutMode === 'tail' ? '取后 ' + state.cutN + ' 位'
       : state.cutMode === 'range' ? '取第 ' + state.cutFrom + '~' + state.cutN + ' 位'
-      : state.cutMode === 'trim' ? '剔除前 ' + state.cutFrom + ' 位、后 ' + state.cutN + ' 位'
+      : state.cutMode === 'trim' ? (state.trimHead === 0 && state.trimTail === 0 ? '完整保留'
+        : '剔除前 ' + state.trimHead + ' 位、后 ' + state.trimTail + ' 位')
       : '完整保留'];
     var t = state.matchText.trim();
     if (state.matchMode !== 'none' && t) {
       parts.push({ prefix: '开头是', suffix: '结尾是', contains: '包含' }[state.matchMode] + '「' + t + '」');
     }
+    if (state.minLen > 0) parts.push('安全模式 ≥ ' + state.minLen + ' 位');
     return parts.join(' · ');
   }
 
   function renderRuleHint() {
     var limited = state.matchMode !== 'none' && state.matchText.trim();
-    var active = state.cutMode !== 'all' || limited;
+    var cutActive = state.cutMode !== 'all' &&
+      !(state.cutMode === 'trim' && state.trimHead === 0 && state.trimTail === 0);
+    var filtered = cutActive || limited || state.minLen > 0;
     el.ruleHint.textContent = '当前规则：' + ruleDescription() +
-      (limited ? '（不区分大小写），不符的自动忽略' : '，所有扫码都会收录');
-    el.ruleState.textContent = active ? '筛选中' : '默认';
-    el.ruleState.classList.toggle('active', !!active);
-    el.ruleBox.classList.toggle('active', !!active);
+      (filtered ? (limited ? '（校验不区分大小写），不符的自动忽略' : '，不符的自动忽略')
+        : '，所有扫码都会收录');
+    el.ruleState.textContent = filtered ? '筛选中' : '默认';
+    el.ruleState.classList.toggle('active', !!filtered);
+    el.ruleBox.classList.toggle('active', !!filtered);
   }
 
   function addSN(raw, source) {
@@ -635,17 +750,30 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
       return false;
     }
     var sn = applyRule(raw);
-    if (!sn) {
-      toast('已忽略：' + raw + '（按当前规则截取为空）', 'warn', 2800);
+    if (!sn || !passesMatch(sn)) {
+      /* 框外/不符合规则的码属于无意扫中，扫码时静默忽略，只在页头累计提示 */
+      if (source === 'scan') markIgnored();
+      else toast('已忽略：' + (sn || raw) + '（不满足 ' + ruleDescription() + '）', 'warn', 2800);
       return false;
     }
-    if (!passesMatch(sn)) {
-      toast('已忽略：' + sn + '（不满足 ' + ruleDescription() + '）', 'warn', 2800);
+    if (state.minLen > 0 && sn.length < state.minLen) {
+      if (source === 'scan') markIgnored();
+      else toast('已忽略：' + sn + '（长度不足 ' + state.minLen + ' 位）', 'warn', 2800);
       return false;
     }
     for (var i = 0; i < state.sns.length; i++) {
       if (state.sns[i].sn === sn) {
-        toast('重复 SN：' + sn + '，已存在，未重复录入', 'warn', 3200);
+        if (source === 'scan') {
+          /* 连续扫到同一个码时，同一 SN 每 3 秒最多提示一次，避免一直闪 */
+          var now = Date.now();
+          if (dupTip.sn !== sn || now - dupTip.t > 3000) {
+            dupTip.sn = sn;
+            dupTip.t = now;
+            showHit(sn, 'warn');
+          }
+        } else {
+          toast('重复 SN：' + sn + '，已存在，未重复录入', 'warn', 3200);
+        }
         return false;
       }
     }
@@ -655,8 +783,30 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
     el.snCount.classList.remove('bump');
     void el.snCount.offsetWidth;
     el.snCount.classList.add('bump');
-    toast((source === 'scan' ? '已扫码录入 ' : '已添加 ') + sn, 'ok', 1500);
+    if (source === 'scan') showHit(sn);
+    else toast('已添加 ' + sn, 'ok', 1500);
     return true;
+  }
+
+  var hitTimer = null;
+  var dupTip = { sn: '', t: 0 };
+
+  function showHit(sn, kind) {
+    var warn = kind === 'warn';
+    el.hitCard.classList.toggle('warn', warn);
+    el.hitLabel.textContent = warn ? '重复 SN' : '已录入';
+    el.hitSn.textContent = sn;
+    el.hitCard.classList.remove('show');
+    void el.hitCard.offsetWidth;
+    el.hitCard.classList.add('show');
+    clearTimeout(hitTimer);
+    hitTimer = setTimeout(function () { el.hitCard.classList.remove('show'); }, warn ? 1500 : 1100);
+  }
+
+  function markIgnored() {
+    state.ignored++;
+    el.ignoredCount.textContent = state.ignored;
+    el.ignoredTag.classList.add('show');
   }
 
   function scrollListToEnd() {
@@ -771,6 +921,9 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
 
     state.sns = [];
     state.model = '';
+    state.ignored = 0;
+    el.ignoredTag.classList.remove('show');
+    el.ignoredCount.textContent = '0';
     fields.model.value = '';
     renderList();
     renderModel();
@@ -787,6 +940,7 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
   var loopTimer = null;
   var brightTimer = null;
   var reader = null;
+  var starting = false;
   var hints = null;
   var canvas = document.createElement('canvas');
   var ctx2d = canvas.getContext('2d', { willReadFrequently: true });
@@ -797,20 +951,43 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
   var lastCodeTs = 0;
   var audioCtx = null;
 
-  /* 与 CSS 中 .frame 的宽高保持一致：取景框内区域 = 画面中心长条 */
-  var STRIP_W = 0.94;
-  var STRIP_H = 0.22;
+  /* 取景框比例（与 CSS 中 .frame 保持一致），二维码模式为正方形 */
+  var STRIP_W = 0.98;
+  var STRIP_H = 0.33;
+  var QR_SIDE = 0.88;
+
+  /* 视频以 object-fit:cover 填满取景区，把取景框换算回视频像素坐标，保证「框内可见 = 框内解码」 */
+  function frameRegion() {
+    var vw = video.videoWidth;
+    var vh = video.videoHeight;
+    var sw = el.stage.clientWidth;
+    var sh = el.stage.clientHeight;
+    if (!vw || !vh || !sw || !sh) return null;
+    var qr = state.symbology === 'qr';
+    var sc = Math.max(sw / vw, sh / vh);
+    var side = Math.round(sh * QR_SIDE / sc);
+    var cw = Math.min(vw, Math.max(1, qr ? side : Math.round(sw * STRIP_W / sc)));
+    var ch = Math.min(vh, Math.max(1, qr ? side : Math.round(sh * STRIP_H / sc)));
+    return {
+      x: Math.round((vw - cw) / 2),
+      y: Math.round((vh - ch) / 2),
+      w: cw,
+      h: ch
+    };
+  }
 
   function ensureHints() {
-    if (hints || !window.ZXing) return;
+    if (!window.ZXing) return;
     var H = ZXing.DecodeHintType;
     var F = ZXing.BarcodeFormat;
     hints = new Map();
-    hints.set(H.POSSIBLE_FORMATS, [
-      F.CODE_128, F.CODE_39, F.CODE_93, F.ITF, F.CODABAR,
-      F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E,
-      F.QR_CODE, F.DATA_MATRIX, F.PDF_417
-    ]);
+    hints.set(H.POSSIBLE_FORMATS, state.symbology === 'qr'
+      ? [F.QR_CODE]
+      : [
+        F.CODE_128, F.CODE_39, F.CODE_93,
+        F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E,
+        F.DATA_MATRIX, F.PDF_417
+      ]);
     hints.set(H.TRY_HARDER, true);
     hints.set(H.CHARACTER_SET, 'UTF-8');
   }
@@ -828,6 +1005,10 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
       toast('未检测到可用摄像头，请检查设备或更换浏览器', 'err', 3800);
     } else if (name === 'NotReadableError') {
       toast('摄像头被其他应用占用，请关闭占用程序后重试', 'err', 3800);
+    } else if (name === 'TimeoutError' || (e && e.message === 'timeout')) {
+      toast('摄像头无响应，可能被其他程序占用，请稍后点击「重启摄像头」重试', 'err', 4600);
+    } else if (e && e.message === 'novideo') {
+      toast('摄像头画面未就绪，请点击「重启摄像头」重试', 'err', 4200);
     } else {
       toast('摄像头启动失败：' + ((e && e.message) || '未知错误'), 'err', 3800);
     }
@@ -843,58 +1024,113 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
     });
   }
 
+  function getUserMediaWithTimeout(constraints, ms) {
+    return new Promise(function (resolve, reject) {
+      var settled = false;
+      var timer = setTimeout(function () {
+        if (settled) return;
+        settled = true;
+        var err = new Error('timeout');
+        err.name = 'TimeoutError';
+        reject(err);
+      }, ms);
+      navigator.mediaDevices.getUserMedia(constraints).then(function (s) {
+        if (settled) {
+          s.getTracks().forEach(function (t) { try { t.stop(); } catch (e) {} });
+          return;
+        }
+        settled = true;
+        clearTimeout(timer);
+        resolve(s);
+      }, function (e) {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        reject(e);
+      });
+    });
+  }
+
   async function startCamera() {
+    if (starting) return;
+    starting = true;
     ensureHints();
 
     if (!window.ZXing) {
+      starting = false;
       toast('条码识别库加载失败：请检查网络后刷新页面重试（手动输入不受影响）', 'err', 5000);
       return;
     }
     if (!window.isSecureContext && location.hostname !== 'localhost') {
+      starting = false;
       toast('浏览器仅允许在 HTTPS 或 localhost 下调用摄像头', 'err', 4600);
       return;
     }
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      starting = false;
       toast('当前浏览器不支持摄像头调用，请使用新版 Chrome / Safari / Edge', 'err', 4200);
       return;
     }
 
-    if (state.scanning) stopCamera(true);
+    var wasRunning = state.scanning;
+    if (wasRunning) {
+      stopCamera(true);
+      /* 让摄像头设备真正释放后再接管，避免画面卡住后重启失败 */
+      await new Promise(function (r) { setTimeout(r, 200); });
+    }
+
+    /* 彻底释放旧视频流，避免卡死的画面被复用 */
+    try { video.pause(); } catch (e) {}
+    try { video.srcObject = null; } catch (e) {}
+    try { video.load(); } catch (e) {}
+    reader = null;
+
     el.camBtn.disabled = true;
-    setScanState('正在启动摄像头…', true);
+    el.camBtn.textContent = wasRunning ? '重启中…' : '启动中…';
+    setScanState(wasRunning ? '正在重启摄像头…' : '正在启动摄像头…', true);
 
     try {
-      stream = await navigator.mediaDevices.getUserMedia({
+      stream = await getUserMediaWithTimeout({
         audio: false,
         video: {
           facingMode: { ideal: 'environment' },
           width: { ideal: 1920 },
           height: { ideal: 1080 }
         }
-      });
+      }, 10000);
+      track = stream.getVideoTracks()[0];
+      video.srcObject = stream;
+      try { await video.play(); } catch (e) { /* 部分浏览器自动播放由 muted 决定 */ }
+      await waitVideoReady();
+      if (video.paused) { try { await video.play(); } catch (e) {} }
+      if (!video.videoWidth || !video.videoHeight || video.paused) throw new Error('novideo');
     } catch (e) {
+      if (stream) {
+        stream.getTracks().forEach(function (t) { try { t.stop(); } catch (err) {} });
+        stream = null;
+      }
+      track = null;
+      try { video.srcObject = null; } catch (err) {}
       cameraError(e);
       el.camBtn.disabled = false;
+      el.camBtn.textContent = '开启摄像头';
+      el.stopBtn.disabled = true;
+      el.torchBtn.disabled = true;
+      el.shotBtn.disabled = true;
       setScanState('摄像头未开启', false);
+      starting = false;
       return;
     }
 
-    track = stream.getVideoTracks()[0];
-    video.srcObject = stream;
-    try { await video.play(); } catch (e) { /* 部分浏览器自动播放由 muted 决定 */ }
-    await waitVideoReady();
-
-    if (video.videoWidth && video.videoHeight) {
-      el.stage.style.aspectRatio = video.videoWidth + ' / ' + video.videoHeight;
-    }
-
+    track.addEventListener('ended', onTrackEnded);
     state.scanning = true;
     state.torchOn = false;
     el.stage.classList.remove('idle');
     el.stage.classList.add('on');
     el.stopBtn.disabled = false;
     el.torchBtn.disabled = false;
-    el.camBtn.textContent = '重新开启';
+    el.camBtn.disabled = false;
+    el.camBtn.textContent = '重启摄像头';
     reader = new ZXing.MultiFormatReader();
     if (state.scanMode === 'continuous') {
       setScanState('正在连续识别', true);
@@ -904,6 +1140,7 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
       el.shotBtn.disabled = false;
     }
     brightTimer = setInterval(measureBrightness, 600);
+    starting = false;
   }
 
   function stopCamera(silent) {
@@ -916,10 +1153,10 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
       stream = null;
     }
     track = null;
+    try { video.pause(); } catch (e) {}
     try { video.srcObject = null; } catch (e) {}
     el.stage.classList.add('idle');
     el.stage.classList.remove('on');
-    el.stage.style.aspectRatio = '';
     el.camBtn.disabled = false;
     el.camBtn.textContent = '开启摄像头';
     el.stopBtn.disabled = true;
@@ -929,6 +1166,13 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
     setScanState('摄像头未开启', false);
     hideLightHint();
     if (!silent) toast('摄像头已关闭', 'info', 1600);
+  }
+
+  function onTrackEnded() {
+    if (!state.scanning) return;
+    stopCamera(true);
+    setScanState('摄像头已断开', false);
+    toast('摄像头连接中断，请点击「开启摄像头」重新连接', 'warn', 3600);
   }
 
   function decodeLoop() {
@@ -943,12 +1187,10 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
   function decodeFrame() {
     if (!state.scanning || !video.videoWidth || video.readyState < 2) return null;
 
-    var vw = video.videoWidth;
-    var vh = video.videoHeight;
-    var cw = Math.round(vw * STRIP_W);
-    var ch = Math.round(vh * STRIP_H);
-    var cx = Math.round((vw - cw) / 2);
-    var cy = Math.round((vh - ch) / 2);
+    var r = frameRegion();
+    if (!r) return null;
+    var cw = r.w;
+    var ch = r.h;
 
     var maxW = 1024;
     var scale = Math.min(1, maxW / cw);
@@ -958,7 +1200,7 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
     canvas.width = dw;
     canvas.height = dh;
     try {
-      ctx2d.drawImage(video, cx, cy, cw, ch, 0, 0, dw, dh);
+      ctx2d.drawImage(video, r.x, r.y, cw, ch, 0, 0, dw, dh);
     } catch (e) {
       return null;
     }
@@ -978,9 +1220,9 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
 
   function handleCode(raw) {
     var code = String(raw == null ? '' : raw).trim();
-    if (!code) return;
+    if (!code) return false;
     var now = performance.now();
-    if (state.scanMode === 'continuous' && code === lastCode && now - lastCodeTs < 1600) return;
+    if (state.scanMode === 'continuous' && code === lastCode && now - lastCodeTs < 1600) return true;
     lastCode = code;
     lastCodeTs = now;
 
@@ -991,6 +1233,7 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
     } else {
       flashFrame(true);
     }
+    return true;
   }
 
   function flashFrame(miss) {
@@ -1060,21 +1303,17 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
       if (state.torchOn) { hideLightHint(); }
       return;
     }
-    var vw = video.videoWidth;
-    var vh = video.videoHeight;
-    var cw = Math.round(vw * STRIP_W);
-    var ch = Math.round(vh * STRIP_H);
-    var sx = Math.round((vw - cw) / 2);
-    var sy = Math.round((vh - ch) / 2);
+    var r = frameRegion();
+    if (!r) return;
 
     var bw = 96;
-    var bh = Math.max(6, Math.round(bw * (STRIP_H / STRIP_W) * (vh / vw)));
+    var bh = Math.max(6, Math.round(bw * r.h / r.w));
     bCanvas.width = bw;
     bCanvas.height = bh;
 
     var avg = 255;
     try {
-      bCtx.drawImage(video, sx, sy, cw, ch, 0, 0, bw, bh);
+      bCtx.drawImage(video, r.x, r.y, r.w, r.h, 0, 0, bw, bh);
       var data = bCtx.getImageData(0, 0, bw, bh).data;
       var sum = 0;
       var count = 0;
@@ -1125,6 +1364,26 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
     }
   }
 
+  /* ---------------- 码制切换（条形码 / 二维码） ---------------- */
+
+  function setSymbology(mode) {
+    if (mode !== 'qr') mode = 'barcode';
+    if (mode === state.symbology) return;
+    state.symbology = mode;
+
+    var opts = el.codeSwitch.querySelectorAll('.mode-opt');
+    for (var i = 0; i < opts.length; i++) {
+      opts[i].classList.toggle('active', opts[i].getAttribute('data-code') === mode);
+    }
+
+    var qr = mode === 'qr';
+    el.stage.classList.toggle('qr', qr);
+    el.tipTitle.textContent = qr ? '仅识别取景框内的二维码' : '仅识别取景框内的条码';
+    el.tipSub.textContent = qr ? '对准二维码，保持完整入框' : '框外多码自动忽略，避免误扫';
+    ensureHints();
+    toast(qr ? '已切换为二维码识别' : '已切换为条形码识别', 'info', 2000);
+  }
+
   function captureOnce() {
     if (state.scanMode !== 'single') return;
     if (!state.scanning) {
@@ -1154,9 +1413,8 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
       if (!state.scanning) { finish(true); return; }
       var text = decodeFrame();
       if (text) {
-        handleCode(text);
-        finish(true);
-        return;
+        var got = handleCode(text);
+        if (got) { finish(true); return; }
       }
       attempts++;
       if (attempts >= 4) { finish(false); return; }
@@ -1183,6 +1441,31 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
     el.cutN.hidden = state.cutMode === 'all';
     el.cutN.disabled = state.cutMode === 'all';
     el.unitN.hidden = state.cutMode === 'all';
+    el.cutFrom.value = trim ? state.trimHead : state.cutFrom;
+    el.cutN.value = trim ? state.trimTail : state.cutN;
+  }
+
+  function resetRule() {
+    state.cutMode = 'all';
+    state.cutFrom = 1;
+    state.cutN = 8;
+    state.trimHead = 0;
+    state.trimTail = 0;
+    state.minLen = 0;
+    state.safeOn = false;
+    state.safeLen = 6;
+    state.matchMode = 'none';
+    state.matchText = '';
+    el.cutMode.value = 'all';
+    el.minLen.value = 6;
+    el.safeToggle.checked = false;
+    el.safeConfig.hidden = true;
+    el.matchMode.value = 'none';
+    el.matchText.value = '';
+    el.matchText.disabled = true;
+    syncCutInputs();
+    renderRuleHint();
+    toast('已清空解析规则，安全模式已关闭', 'ok', 1600);
   }
 
   el.cutMode.addEventListener('change', function () {
@@ -1193,15 +1476,50 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
 
   el.cutFrom.addEventListener('input', function () {
     var v = parseInt(el.cutFrom.value, 10);
-    state.cutFrom = (isNaN(v) || v < 0) ? 0 : Math.min(v, 64);
+    v = (isNaN(v) || v < 0) ? 0 : Math.min(v, 64);
+    if (state.cutMode === 'trim') state.trimHead = v;
+    else state.cutFrom = v;
     renderRuleHint();
   });
 
   el.cutN.addEventListener('input', function () {
     var v = parseInt(el.cutN.value, 10);
-    state.cutN = (isNaN(v) || v < 0) ? 0 : Math.min(v, 64);
+    v = (isNaN(v) || v < 0) ? 0 : Math.min(v, 64);
+    if (state.cutMode === 'trim') state.trimTail = v;
+    else state.cutN = v;
     renderRuleHint();
   });
+
+  el.minLen.addEventListener('input', function () {
+    var v = parseInt(el.minLen.value, 10);
+    if (isNaN(v)) {
+      state.minLen = 0;
+      renderRuleHint();
+      return;
+    }
+    v = (v < 1) ? 1 : Math.min(v, 64);
+    state.safeLen = v;
+    state.minLen = v;
+    renderRuleHint();
+  });
+
+  el.minLen.addEventListener('blur', function () {
+    var v = parseInt(el.minLen.value, 10);
+    v = (isNaN(v) || v < 1) ? 1 : Math.min(v, 64);
+    el.minLen.value = v;
+    state.safeLen = v;
+    state.minLen = v;
+    renderRuleHint();
+  });
+
+  el.safeToggle.addEventListener('change', function () {
+    state.safeOn = el.safeToggle.checked;
+    el.safeConfig.hidden = !state.safeOn;
+    state.minLen = state.safeOn ? state.safeLen : 0;
+    renderRuleHint();
+  });
+
+  el.ruleReset.addEventListener('click', resetRule);
 
   el.matchMode.addEventListener('change', function () {
     state.matchMode = el.matchMode.value;
@@ -1217,7 +1535,10 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
   renderRuleHint();
   syncCutInputs();
 
-  el.camBtn.addEventListener('click', function () { startCamera(); });
+  el.camBtn.addEventListener('click', function () {
+    if (state.scanning) toast('正在重置摄像头…', 'info', 1200);
+    startCamera();
+  });
   el.stopBtn.addEventListener('click', function () { stopCamera(false); });
   el.torchBtn.addEventListener('click', toggleTorch);
 
@@ -1225,6 +1546,12 @@ select:disabled{color:#7f96b3;opacity:.65;cursor:not-allowed}
     var btn = e.target.closest ? e.target.closest('.mode-opt') : null;
     if (!btn) return;
     setScanMode(btn.getAttribute('data-mode'));
+  });
+
+  el.codeSwitch.addEventListener('click', function (e) {
+    var btn = e.target.closest ? e.target.closest('.mode-opt') : null;
+    if (!btn) return;
+    setSymbology(btn.getAttribute('data-code'));
   });
 
   el.shotBtn.addEventListener('click', captureOnce);
